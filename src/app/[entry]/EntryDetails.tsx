@@ -1,6 +1,8 @@
 import { Stack, useLocalSearchParams } from 'expo-router'
+
 import { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
+
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
 
@@ -14,6 +16,13 @@ export default function EntryDetails() {
       if (response) setData(response)
     })()
   }, [])
+
+  if (!data)
+    return (
+      <View>
+        <Text>There was a problem showing this Entry</Text>
+      </View>
+    )
 
   return (
     <>
