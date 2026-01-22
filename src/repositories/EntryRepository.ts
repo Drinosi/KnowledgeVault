@@ -22,7 +22,7 @@ export const EntryRepository = {
 
   async getAll(): Promise<Entry[]> {
     const db = await openDB()
-    const rows: any[] = await db.getAllAsync('SELECT * FROM entries ORDER BY updated_at DESC')
+    const rows: any[] = await db.getAllAsync('SELECT * FROM entries ORDER BY updated_at ASC')
     return rows.map(row => ({
       id: row.id,
       title: row.title,
@@ -54,5 +54,10 @@ export const EntryRepository = {
   async delete(id: string): Promise<void> {
     const db = await openDB()
     await db.runAsync('DELETE FROM entries WHERE id = ?', id)
+  },
+
+  async deleteAll(): Promise<void> {
+    const db = await openDB()
+    await db.runAsync('DELETE FROM entries')
   },
 }

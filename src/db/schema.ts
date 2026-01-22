@@ -1,4 +1,3 @@
-
 export const createTables = `
 PRAGMA foreign_keys = ON;
 
@@ -25,4 +24,4 @@ CREATE TABLE IF NOT EXISTS entry_tags (
   FOREIGN KEY (entry_id) REFERENCES entries(id) ON DELETE CASCADE,
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
-`;
+`

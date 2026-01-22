@@ -15,6 +15,7 @@
     "ios": {
       "supportsTablet": true
     },
+    "scheme": "KnowledgeVault",
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -26,8 +27,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-sqlite"
-    ]
+    "plugins": ["expo-sqlite", "expo-router"]
   }
 }
