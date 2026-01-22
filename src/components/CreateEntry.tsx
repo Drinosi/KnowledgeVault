@@ -1,6 +1,22 @@
 import { useState } from 'react'
-import { View, Text, TextInput, Pressable, StyleSheet, Modal } from 'react-native'
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Modal,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from 'react-native'
 import 'react-native-get-random-values'
+
+import { Picker } from '@react-native-picker/picker'
+
+if (Platform.OS === 'android') {
+  UIManager.setLayoutAnimationEnabledExperimental?.(true)
+}
 
 type props = {
   visible: boolean
@@ -41,31 +57,56 @@ export default function CreateEntryModal({ visible, setVisible, onSubmit }: prop
               value={title}
               onChangeText={setTitle}
               style={styles.input}
+              placeholderTextColor="black"
             />
             <TextInput
               placeholder="Content"
+              placeholderTextColor="black"
               value={content}
               onChangeText={setContent}
               style={styles.input}
               multiline
             />
-            <TextInput
-              placeholder="Type (snippet | concept | link)"
-              value={type}
-              onChangeText={text => setType(text as 'snippet' | 'concept' | 'link')}
-              style={styles.input}
-            />
+
+            <View style={styles.pickerWrapper}>
+              <Picker
+                itemStyle={{ fontSize: 18, textAlign: 'center', color: 'black' }}
+                style={{
+                  width: '100%',
+                  // backgroundColor: 'red',
+                }}
+                selectedValue={type}
+                onValueChange={value => {
+                  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+                  setType(value)
+                }}
+              >
+                <Picker.Item label="Snippet" value="snippet" />
+                <Picker.Item label="Concept" value="concept" />
+                <Picker.Item label="Link" value="link" />
+              </Picker>
+            </View>
             <TextInput
               placeholder="Language (optional)"
+              placeholderTextColor="black"
               value={language}
               onChangeText={setLanguage}
               style={styles.input}
             />
+
             <TextInput
               placeholder="Source URL (optional)"
+              placeholderTextColor="black"
               value={sourceUrl}
               onChangeText={setSourceUrl}
-              style={styles.input}
+              style={{
+                borderWidth: 1,
+                borderColor: 'gray',
+                padding: 10,
+                borderRadius: 8,
+                marginBottom: 12,
+                display: `${type === 'link' ? 'flex' : 'none'}`,
+              }}
             />
 
             <Pressable style={styles.button} onPress={handleSubmit}>
@@ -93,6 +134,16 @@ const styles = StyleSheet.create({
   openButtonText: {
     color: 'white',
     fontWeight: '600',
+  },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 8,
+
+    marginBottom: 12,
+    overflow: 'hidden',
+    height: 120,
+    color: 'black',
   },
   modalOverlay: {
     flex: 1,
