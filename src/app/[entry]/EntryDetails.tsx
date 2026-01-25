@@ -5,6 +5,7 @@ import { View, Text } from 'react-native'
 
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
+import Markdown from 'react-native-markdown-display'
 
 export default function EntryDetails() {
   const [data, setData] = useState<Entry>()
@@ -26,9 +27,15 @@ export default function EntryDetails() {
 
   return (
     <>
-      <Stack.Screen options={{ title: data?.title ?? 'Loading...' }} />
+      <Stack.Screen
+        options={{
+          title: data?.title ?? 'Loading...',
+          headerBackVisible: false,
+        }}
+      />
       <View style={{ padding: 6 }}>
         <Text>{data?.title}</Text>
+        <Markdown>{data?.content}</Markdown>
       </View>
     </>
   )

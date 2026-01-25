@@ -1,5 +1,4 @@
 import { Tabs } from 'expo-router'
-import { View, Text } from 'react-native'
 
 export default function TabLayout() {
   return (
@@ -17,7 +16,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="Me"
+        name="me"
         options={{
           title: 'Me',
         }}

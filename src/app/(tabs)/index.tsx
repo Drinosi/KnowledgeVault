@@ -1,8 +1,10 @@
 import 'react-native-get-random-values'
 
 import { useEffect, useState } from 'react'
-import { Text, View, FlatList, Button } from 'react-native'
+import { Text, View, FlatList, Button, ImageBackground, Pressable } from 'react-native'
 import { Link } from 'expo-router'
+
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { v4 as uuidv4 } from 'uuid'
 
@@ -38,10 +40,11 @@ export default function App() {
   }, [entries.length])
 
   return (
-    <View style={{ flex: 1, padding: 4 }}>
+    <View style={{ flex: 1, height: 'auto', flexGrow: 1 }}>
       {entries.length ? (
         <>
           <FlatList
+            style={{ padding: 4 }}
             data={entries}
             keyExtractor={item => item.id}
             numColumns={2}
@@ -50,6 +53,8 @@ export default function App() {
                 style={{
                   flex: 1,
                   margin: 6,
+                  maxHeight: 200,
+                  overflow: 'hidden',
                   shadowColor: '#000',
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.05,
@@ -88,14 +93,78 @@ export default function App() {
               </Link>
             )}
           />
-          <View>
-            <Button title="Add entry" onPress={() => setCreateOpen(true)} />
-          </View>
+          <Pressable
+            onPress={() => setCreateOpen(true)}
+            style={({ pressed }) => [
+              {
+                height: 60,
+                width: 60,
+                marginBottom: 20,
+                borderRadius: 99,
+                marginHorizontal: 'auto',
+                backgroundColor: 'black',
+                alignItems: 'center',
+                alignContent: 'center',
+                justifyContent: 'center',
+                opacity: pressed ? 0.85 : 1,
+              },
+            ]}
+          >
+            <Text
+              style={{
+                alignSelf: 'center',
+                color: '#FFFFFF',
+                fontSize: 30,
+                marginBottom: 4,
+              }}
+            >
+              +
+            </Text>
+          </Pressable>
         </>
       ) : (
-        <View>
-          <Button title="No entries yet. Create one?" onPress={() => setCreateOpen(true)} />
-        </View>
+        <SafeAreaProvider>
+          <SafeAreaView
+            style={{
+              flex: 1,
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              position: 'absolute',
+              inset: 0,
+            }}
+          >
+            <ImageBackground
+              resizeMethod="resize"
+              style={{ flex: 1, position: 'absolute', inset: 0 }}
+              source={require('../../assets/images/main_page_background.png')}
+            />
+            <Pressable
+              onPress={() => setCreateOpen(true)}
+              style={({ pressed }) => [
+                {
+                  height: 52,
+                  width: 300,
+                  marginBottom: 20,
+                  borderRadius: 12,
+                  backgroundColor: 'indigo',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  opacity: pressed ? 0.85 : 0.8,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  color: '#FFFFFF',
+                  fontSize: 16,
+                  fontWeight: '600',
+                }}
+              >
+                Add an entry
+              </Text>
+            </Pressable>
+          </SafeAreaView>
+        </SafeAreaProvider>
       )}
 
       {createOpen && (

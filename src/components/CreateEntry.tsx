@@ -13,6 +13,7 @@ import {
 import 'react-native-get-random-values'
 
 import { Picker } from '@react-native-picker/picker'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 if (Platform.OS === 'android') {
   UIManager.setLayoutAnimationEnabledExperimental?.(true)
@@ -48,76 +49,92 @@ export default function CreateEntryModal({ visible, setVisible, onSubmit }: prop
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <Modal visible={visible} animationType="slide" transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <TextInput
-              placeholder="Title"
-              value={title}
-              onChangeText={setTitle}
-              style={styles.input}
-              placeholderTextColor="black"
-            />
-            <TextInput
-              placeholder="Content"
-              placeholderTextColor="black"
-              value={content}
-              onChangeText={setContent}
-              style={styles.input}
-              multiline
-            />
-
-            <View style={styles.pickerWrapper}>
-              <Picker
-                itemStyle={{ fontSize: 18, textAlign: 'center', color: 'black' }}
+    <View>
+      <Modal
+        style={{ backgroundColor: 'black' }}
+        visible={visible}
+        animationType="slide"
+        transparent={false}
+      >
+        <KeyboardAwareScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={{ fontSize: 28, marginBottom: 20 }}>What do you have in mind?</Text>
+              <TextInput
+                placeholder="Title"
+                value={title}
+                onChangeText={setTitle}
+                style={styles.input}
+                placeholderTextColor="lightgrey"
+              />
+              <View style={styles.pickerWrapper}>
+                <Picker
+                  itemStyle={{ fontSize: 18, textAlign: 'center', color: 'black' }}
+                  style={{
+                    width: '100%',
+                    flex: 1,
+                    justifyContent: 'center',
+                  }}
+                  selectedValue={type}
+                  onValueChange={value => {
+                    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+                    setType(value)
+                  }}
+                >
+                  <Picker.Item label="Snippet" value="snippet" />
+                  <Picker.Item label="Concept" value="concept" />
+                  <Picker.Item label="Link" value="link" />
+                </Picker>
+              </View>
+              <TextInput
+                placeholder="Code, text, snippets... anything really"
+                placeholderTextColor="lightgrey"
+                value={content}
+                onChangeText={setContent}
                 style={{
-                  width: '100%',
-                  // backgroundColor: 'red',
+                  minHeight: 150,
+                  backgroundColor: 'white',
+                  padding: 10,
+                  fontSize: 16,
+                  borderRadius: 8,
+                  marginBottom: 12,
                 }}
-                selectedValue={type}
-                onValueChange={value => {
-                  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
-                  setType(value)
+                multiline
+              />
+
+              <TextInput
+                placeholder="Source URL (optional)"
+                placeholderTextColor="lightgrey"
+                value={sourceUrl}
+                onChangeText={setSourceUrl}
+                style={{
+                  backgroundColor: 'white',
+                  padding: 10,
+                  fontSize: 18,
+                  height: 60,
+                  borderRadius: 8,
+                  marginBottom: 12,
+                  display: `${type === 'link' ? 'flex' : 'none'}`,
                 }}
-              >
-                <Picker.Item label="Snippet" value="snippet" />
-                <Picker.Item label="Concept" value="concept" />
-                <Picker.Item label="Link" value="link" />
-              </Picker>
+              />
+
+              <Pressable style={styles.button} onPress={handleSubmit}>
+                <Text style={styles.buttonText}>Create Entry</Text>
+              </Pressable>
+
+              <Pressable style={styles.cancelButton} onPress={() => setVisible(false)}>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </Pressable>
             </View>
-            <TextInput
-              placeholder="Language (optional)"
-              placeholderTextColor="black"
-              value={language}
-              onChangeText={setLanguage}
-              style={styles.input}
-            />
-
-            <TextInput
-              placeholder="Source URL (optional)"
-              placeholderTextColor="black"
-              value={sourceUrl}
-              onChangeText={setSourceUrl}
-              style={{
-                borderWidth: 1,
-                borderColor: 'gray',
-                padding: 10,
-                borderRadius: 8,
-                marginBottom: 12,
-                display: `${type === 'link' ? 'flex' : 'none'}`,
-              }}
-            />
-
-            <Pressable style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Create Entry</Text>
-            </Pressable>
-
-            <Pressable style={styles.cancelButton} onPress={() => setVisible(false)}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </Pressable>
           </View>
-        </View>
+        </KeyboardAwareScrollView>
       </Modal>
     </View>
   )
@@ -136,54 +153,57 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   pickerWrapper: {
-    borderWidth: 1,
-    borderColor: 'gray',
     borderRadius: 8,
-
+    maxHeight: 150,
+    minHeight: 150,
     marginBottom: 12,
     overflow: 'hidden',
-    height: 120,
     color: 'black',
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'white',
   },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
   },
   modalContent: {
     width: '90%',
-    backgroundColor: 'white',
+    height: 'auto',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 12,
     padding: 20,
   },
   input: {
-    borderWidth: 1,
-    borderColor: 'gray',
     padding: 10,
+    height: 60,
+    fontSize: 16,
     borderRadius: 8,
     marginBottom: 12,
+    backgroundColor: 'white',
   },
   button: {
-    padding: 12,
-    backgroundColor: '#000',
+    padding: 16,
+    backgroundColor: 'indigo',
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 8,
   },
   buttonText: {
     color: 'white',
-    fontWeight: '600',
+    fontSize: 18,
   },
   cancelButton: {
-    padding: 12,
-    backgroundColor: '#ccc',
+    padding: 16,
+    backgroundColor: 'black',
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 8,
   },
   cancelButtonText: {
-    color: '#000',
-    fontWeight: '600',
+    color: 'white',
+    fontSize: 18,
   },
 })
