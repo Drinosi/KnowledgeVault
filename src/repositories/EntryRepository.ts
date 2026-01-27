@@ -60,4 +60,27 @@ export const EntryRepository = {
     const db = await openDB()
     await db.runAsync('DELETE FROM entries')
   },
+
+  async update(id: string, changes: Partial<Entry>): Promise<void> {
+    const db = await openDB()
+
+    const fields: string[] = []
+    const values: any[] = []
+
+    for (const key of Object.keys(changes) as (keyof Entry)[]) {
+      if (key !== 'id' && key !== 'createdAt') {
+        const column = key === 'sourceUrl' ? 'source_url' : key.toLowerCase()
+        fields.push(`${column} = ?`)
+        values.push(changes[key])
+      }
+    }
+
+    fields.push('updated_at = ?')
+    values.push(Date.now())
+
+    values.push(id)
+
+    const query = `UPDATE entries SET ${fields.join(', ')} WHERE id = ?`
+    await db.runAsync(query, ...values)
+  },
 }

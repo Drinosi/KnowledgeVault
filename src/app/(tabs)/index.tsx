@@ -1,7 +1,7 @@
 import 'react-native-get-random-values'
 
 import { useEffect, useState } from 'react'
-import { Text, View, FlatList, Button, ImageBackground, Pressable } from 'react-native'
+import { Text, View, FlatList, ImageBackground, Pressable, Dimensions } from 'react-native'
 import { Link } from 'expo-router'
 
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
@@ -13,7 +13,13 @@ import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
 import { runMigrations } from '../../db/migrations'
 
+import { useNavigation } from '@react-navigation/native'
+
+const { width } = Dimensions.get('window')
+
 export default function App() {
+  const navigation = useNavigation()
+
   const [entries, setEntries] = useState<Entry[]>([])
   const [createOpen, setCreateOpen] = useState(false)
 
@@ -34,17 +40,22 @@ export default function App() {
   useEffect(() => {
     ;(async () => {
       await runMigrations()
+    })()
+
+    const unsubscribe = navigation.addListener('focus', async () => {
       const allEntries = await EntryRepository.getAll()
       setEntries(allEntries)
-    })()
-  }, [entries.length])
+    })
+
+    return unsubscribe
+  }, [entries.length, navigation])
 
   return (
     <View style={{ flex: 1, height: 'auto', flexGrow: 1 }}>
       {entries.length ? (
         <>
           <FlatList
-            style={{ padding: 4 }}
+            style={{ padding: 4, marginBottom: 8 }}
             data={entries}
             keyExtractor={item => item.id}
             numColumns={2}
@@ -98,10 +109,12 @@ export default function App() {
             style={({ pressed }) => [
               {
                 height: 60,
+                position: 'absolute',
+                zIndex: 9999,
                 width: 60,
-                marginBottom: 20,
+                left: width * 0.5 - 30,
                 borderRadius: 99,
-                marginHorizontal: 'auto',
+                bottom: 20,
                 backgroundColor: 'black',
                 alignItems: 'center',
                 alignContent: 'center',
@@ -144,7 +157,7 @@ export default function App() {
                 {
                   height: 52,
                   width: 300,
-                  marginBottom: 20,
+                  marginBottom: 8,
                   borderRadius: 12,
                   backgroundColor: 'indigo',
                   alignItems: 'center',
