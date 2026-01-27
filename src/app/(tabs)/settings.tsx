@@ -4,7 +4,9 @@ import React from 'react'
 export default function settings() {
   return (
     <View>
-      <Text>settings</Text>
+      <Text style={{ backgroundColor: 'red', color: 'white', padding: 100, margin: 100 }}>
+        Settings
+      </Text>
     </View>
   )
 }
