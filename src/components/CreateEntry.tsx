@@ -1,23 +1,9 @@
 import { useState } from 'react'
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  StyleSheet,
-  Modal,
-  LayoutAnimation,
-  Platform,
-  UIManager,
-} from 'react-native'
+import { View, Text, TextInput, Pressable, StyleSheet, Modal } from 'react-native'
 import 'react-native-get-random-values'
 
 import { Picker } from '@react-native-picker/picker'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-
-if (Platform.OS === 'android') {
-  UIManager.setLayoutAnimationEnabledExperimental?.(true)
-}
 
 type props = {
   visible: boolean
@@ -84,7 +70,6 @@ export default function CreateEntryModal({ visible, setVisible, onSubmit }: prop
                   }}
                   selectedValue={type}
                   onValueChange={value => {
-                    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
                     setType(value)
                   }}
                 >
@@ -126,7 +111,7 @@ export default function CreateEntryModal({ visible, setVisible, onSubmit }: prop
               />
 
               <Pressable style={styles.button} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>Create Entry</Text>
+                <Text style={styles.buttonText}>Create Snippet</Text>
               </Pressable>
 
               <Pressable style={styles.cancelButton} onPress={() => setVisible(false)}>
@@ -187,7 +172,7 @@ const styles = StyleSheet.create({
   },
   button: {
     padding: 16,
-    backgroundColor: 'indigo',
+    backgroundColor: '#4D88E9',
     borderRadius: 8,
     alignItems: 'center',
   },
@@ -197,13 +182,15 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     padding: 16,
-    backgroundColor: 'black',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'grey',
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 8,
   },
   cancelButtonText: {
-    color: 'white',
+    color: 'grey',
     fontSize: 18,
   },
 })

@@ -6,9 +6,15 @@ import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
 import Markdown from 'react-native-markdown-display'
 
+import { AppDispatch } from '../../store'
+import { useDispatch } from 'react-redux'
+import { updateEntry } from '../../store/slices/entriesSlice'
+
 export default function EntryDetails() {
   const [data, setData] = useState<Entry>()
   const [editOpen, setEditOpen] = useState(false)
+
+  const dispatch: AppDispatch = useDispatch()
 
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
@@ -18,6 +24,8 @@ export default function EntryDetails() {
   const [edited, setEdited] = useState(false)
 
   const params = useLocalSearchParams()
+
+  console.log(data)
 
   useEffect(() => {
     ;(async () => {
@@ -36,13 +44,24 @@ export default function EntryDetails() {
   async function handleEdit() {
     if (!data) return
 
-    await EntryRepository.update(params.entry as string, {
+    const entryId = Array.isArray(params.entry) ? params.entry[0] : params.entry
+
+    const changes: Partial<Entry> = {
       title,
       content,
       type,
       language,
       sourceUrl,
-    })
+    }
+
+    await EntryRepository.update(entryId, changes)
+
+    const updatedEntry: Entry = {
+      ...data,
+      ...changes,
+      updatedAt: Date.now(),
+    }
+    dispatch(updateEntry(updatedEntry))
 
     setEdited(prev => !prev)
   }
