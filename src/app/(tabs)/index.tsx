@@ -1,11 +1,9 @@
 import 'react-native-get-random-values'
 
 import { useEffect, useState } from 'react'
-import { Text, View, FlatList, ImageBackground, Pressable, Dimensions } from 'react-native'
+import { Text, View, FlatList, Image, Pressable, Dimensions } from 'react-native'
 import { Link } from 'expo-router'
-
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
-
 import { v4 as uuidv4 } from 'uuid'
 
 import CreateEntryForm from '../../components/CreateEntry'
@@ -13,15 +11,24 @@ import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
 import { runMigrations } from '../../db/migrations'
 
-import { useNavigation } from '@react-navigation/native'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState, AppDispatch } from '../../store'
+import { addEntry, setEntries } from '../../store/slices/entriesSlice'
 
 const { width } = Dimensions.get('window')
 
 export default function App() {
-  const navigation = useNavigation()
-
-  const [entries, setEntries] = useState<Entry[]>([])
+  const dispatch: AppDispatch = useDispatch()
+  const entries = useSelector((state: RootState) => state.entries.entries)
   const [createOpen, setCreateOpen] = useState(false)
+
+  useEffect(() => {
+    ;(async () => {
+      await runMigrations()
+      const allEntries = await EntryRepository.getAll()
+      dispatch(setEntries(allEntries))
+    })()
+  }, [])
 
   const handleCreate = async (entryData: Omit<Entry, 'id' | 'createdAt' | 'updatedAt'>) => {
     const now = Date.now()
@@ -31,27 +38,16 @@ export default function App() {
       updatedAt: now,
       ...entryData,
     }
+
     await EntryRepository.create(newEntry)
-    const allEntries = await EntryRepository.getAll()
-    setEntries(allEntries)
+
+    dispatch(addEntry(newEntry))
+
     setCreateOpen(false)
   }
 
-  useEffect(() => {
-    ;(async () => {
-      await runMigrations()
-    })()
-
-    const unsubscribe = navigation.addListener('focus', async () => {
-      const allEntries = await EntryRepository.getAll()
-      setEntries(allEntries)
-    })
-
-    return unsubscribe
-  }, [entries.length, navigation])
-
   return (
-    <View style={{ flex: 1, height: 'auto', flexGrow: 1 }}>
+    <View style={{ flex: 1 }}>
       {entries.length ? (
         <>
           <FlatList
@@ -79,13 +75,7 @@ export default function App() {
                   params: { entry: item.id },
                 }}
               >
-                <View
-                  style={{
-                    padding: 10,
-                    height: '100%',
-                    width: '100%',
-                  }}
-                >
+                <View style={{ padding: 10, height: '100%', width: '100%' }}>
                   <Text
                     style={{ color: 'black', fontSize: 18, fontWeight: '700', marginBottom: 12 }}
                   >
@@ -117,20 +107,12 @@ export default function App() {
                 bottom: 20,
                 backgroundColor: 'black',
                 alignItems: 'center',
-                alignContent: 'center',
                 justifyContent: 'center',
                 opacity: pressed ? 0.85 : 1,
               },
             ]}
           >
-            <Text
-              style={{
-                alignSelf: 'center',
-                color: '#FFFFFF',
-                fontSize: 30,
-                marginBottom: 4,
-              }}
-            >
+            <Text style={{ color: '#FFFFFF', fontSize: 30, marginBottom: 4, textAlign: 'center' }}>
               +
             </Text>
           </Pressable>
@@ -140,42 +122,49 @@ export default function App() {
           <SafeAreaView
             style={{
               flex: 1,
-              justifyContent: 'flex-end',
+              justifyContent: 'center',
               alignItems: 'center',
               position: 'absolute',
               inset: 0,
             }}
           >
-            <ImageBackground
-              resizeMethod="resize"
-              style={{ flex: 1, position: 'absolute', inset: 0 }}
-              source={require('../../assets/images/main_page_background.png')}
+            <Image
+              style={{
+                width: '100%',
+                height: 285,
+              }}
+              source={require('../../assets/images/home_background.png')}
             />
-            <Pressable
-              onPress={() => setCreateOpen(true)}
-              style={({ pressed }) => [
-                {
-                  height: 52,
-                  width: 300,
-                  marginBottom: 8,
-                  borderRadius: 12,
-                  backgroundColor: 'indigo',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  opacity: pressed ? 0.85 : 0.8,
-                },
-              ]}
-            >
+            <View>
               <Text
-                style={{
-                  color: '#FFFFFF',
-                  fontSize: 16,
-                  fontWeight: '600',
-                }}
+                style={{ textAlign: 'center', fontSize: 20, marginBottom: 12, fontWeight: 600 }}
               >
-                Add an entry
+                No Snippets Yet
               </Text>
-            </Pressable>
+              <Text style={{ textAlign: 'center', fontSize: 16, color: 'grey', marginBottom: 30 }}>
+                Get started by adding a new snippet
+              </Text>
+
+              <Pressable
+                onPress={() => setCreateOpen(true)}
+                style={({ pressed }) => [
+                  {
+                    height: 52,
+                    width: 300,
+                    marginBottom: 8,
+                    borderRadius: 9999,
+                    backgroundColor: '#4D88E9',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: pressed ? 0.85 : 1,
+                  },
+                ]}
+              >
+                <Text style={{ color: '#FFFFFF', fontSize: 20, fontWeight: '600' }}>
+                  + Add entry
+                </Text>
+              </Pressable>
+            </View>
           </SafeAreaView>
         </SafeAreaProvider>
       )}
