@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../store'
 import { clearEntries } from '../../store/slices/entriesSlice'
 
+import Feather from '@expo/vector-icons/Feather'
+
 const Me = () => {
   const [loading, setLoading] = useState(false)
 
@@ -34,13 +36,22 @@ const Me = () => {
           borderRadius: 8,
           maxHeight: 60,
           flex: 1,
-          justifyContent: 'center',
+          justifyContent: 'space-between',
           alignContent: 'center',
           alignItems: 'center',
+          flexDirection: 'row',
         }}
         onPress={handleClick}
       >
-        <Text style={{ textAlign: 'center', color: 'white' }}>
+        <Feather name="trash-2" size={24} color={'white'} />
+        <Text
+          style={{
+            textAlign: 'center',
+            color: 'white',
+            justifyContent: 'center',
+            alignContent: 'center',
+          }}
+        >
           {!loading ? 'Delete all my snippets!' : 'Loading...'}
         </Text>
       </Pressable>

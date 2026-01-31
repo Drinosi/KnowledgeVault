@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, TextInput, Pressable, StyleSheet, Modal } from 'react-native'
+import { View, Text, TextInput, Pressable, StyleSheet, Modal, Image } from 'react-native'
 import 'react-native-get-random-values'
 
 import { Picker } from '@react-native-picker/picker'
@@ -52,7 +52,37 @@ export default function CreateEntryModal({ visible, setVisible, onSubmit }: prop
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-              <Text style={{ fontSize: 28, marginBottom: 20 }}>What do you have in mind?</Text>
+              <View
+                style={{
+                  height: 120,
+                  marginLeft: -30,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <Image
+                  style={{
+                    width: 140,
+                    height: 140,
+                  }}
+                  source={require('../assets/images/home_background.png')}
+                />
+                <Text
+                  style={{
+                    fontSize: 20,
+                    alignSelf: 'baseline',
+                    borderBottomWidth: 1,
+                    flex: 1,
+                    paddingBottom: 20,
+                    paddingLeft: 20,
+                    borderBottomColor: '#c7c9d0',
+                  }}
+                >
+                  Add entry
+                </Text>
+              </View>
+
+              <Text style={styles.label}>Title</Text>
               <TextInput
                 placeholder="Title"
                 value={title}
@@ -60,9 +90,10 @@ export default function CreateEntryModal({ visible, setVisible, onSubmit }: prop
                 style={styles.input}
                 placeholderTextColor="lightgrey"
               />
+              <Text style={styles.label}>Type</Text>
               <View style={styles.pickerWrapper}>
                 <Picker
-                  itemStyle={{ fontSize: 18, textAlign: 'center', color: 'black' }}
+                  itemStyle={{ fontSize: 18, textAlign: 'center', color: '#8b8c91' }}
                   style={{
                     width: '100%',
                     flex: 1,
@@ -78,18 +109,22 @@ export default function CreateEntryModal({ visible, setVisible, onSubmit }: prop
                   <Picker.Item label="Link" value="link" />
                 </Picker>
               </View>
+              <Text style={styles.label}>Description</Text>
               <TextInput
-                placeholder="Code, text, snippets... anything really"
+                placeholder="Enter a description"
                 placeholderTextColor="lightgrey"
                 value={content}
                 onChangeText={setContent}
                 style={{
                   minHeight: 150,
                   backgroundColor: 'white',
-                  padding: 10,
+                  padding: 6,
                   fontSize: 16,
                   borderRadius: 8,
+                  color: '#8b8c91',
                   marginBottom: 12,
+                  borderWidth: 1,
+                  borderColor: '#c7c9d0',
                 }}
                 multiline
               />
@@ -101,22 +136,26 @@ export default function CreateEntryModal({ visible, setVisible, onSubmit }: prop
                 onChangeText={setSourceUrl}
                 style={{
                   backgroundColor: 'white',
-                  padding: 10,
-                  fontSize: 18,
-                  height: 60,
+                  padding: 6,
+                  fontSize: 16,
+                  height: 45,
+                  color: '#8b8c91',
                   borderRadius: 8,
+                  borderWidth: 1,
+                  borderColor: '#c7c9d0',
                   marginBottom: 12,
                   display: `${type === 'link' ? 'flex' : 'none'}`,
                 }}
               />
 
-              <Pressable style={styles.button} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>Create Snippet</Text>
-              </Pressable>
-
-              <Pressable style={styles.cancelButton} onPress={() => setVisible(false)}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </Pressable>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <Pressable style={styles.cancelButton} onPress={() => setVisible(false)}>
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </Pressable>
+                <Pressable style={styles.button} onPress={handleSubmit}>
+                  <Text style={styles.buttonText}>Create Snippet</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
         </KeyboardAwareScrollView>
@@ -143,6 +182,8 @@ const styles = StyleSheet.create({
     minHeight: 150,
     marginBottom: 12,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#c7c9d0',
     color: 'black',
     flex: 1,
     justifyContent: 'center',
@@ -158,39 +199,51 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '90%',
     height: 'auto',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: 'white',
     borderRadius: 12,
-    padding: 20,
+    padding: 16,
   },
   input: {
-    padding: 10,
-    height: 60,
+    padding: 6,
+    borderWidth: 1,
+    borderColor: '#c7c9d0',
+    height: 45,
     fontSize: 16,
     borderRadius: 8,
+    color: '#8b8c91',
     marginBottom: 12,
     backgroundColor: 'white',
   },
   button: {
-    padding: 16,
-    backgroundColor: '#4D88E9',
-    borderRadius: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    backgroundColor: '#558ee7',
+    borderRadius: 20,
     alignItems: 'center',
+    flex: 1,
   },
   buttonText: {
     color: 'white',
     fontSize: 18,
   },
   cancelButton: {
-    padding: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 10,
     backgroundColor: 'white',
     borderWidth: 1,
+    width: 130,
     borderColor: 'grey',
-    borderRadius: 8,
+    borderRadius: 20,
     alignItems: 'center',
-    marginTop: 8,
   },
   cancelButtonText: {
     color: 'grey',
     fontSize: 18,
+  },
+  label: {
+    color: '#c7c9d0',
+    marginBottom: 8,
+    fontWeight: 600,
+    fontSize: 16,
   },
 })
