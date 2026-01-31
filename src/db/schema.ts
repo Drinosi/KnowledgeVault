@@ -9,8 +9,10 @@ CREATE TABLE IF NOT EXISTS entries (
   language TEXT,
   source_url TEXT,
   created_at INTEGER NOT NULL,
-  updated_at INTEGER NOT NULL
+  updated_at INTEGER
 );
+
+
 
 CREATE TABLE IF NOT EXISTS tags (
   id TEXT PRIMARY KEY NOT NULL,

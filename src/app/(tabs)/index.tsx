@@ -35,8 +35,8 @@ export default function App() {
     const newEntry: Entry = {
       id: uuidv4(),
       createdAt: now,
-      updatedAt: now,
       ...entryData,
+      updatedAt: null,
     }
 
     await EntryRepository.create(newEntry)
@@ -45,6 +45,8 @@ export default function App() {
 
     setCreateOpen(false)
   }
+
+  console.log(entries)
 
   return (
     <View style={{ flex: 1 }}>
@@ -88,7 +90,8 @@ export default function App() {
                     Created on {new Date(Number(item.createdAt)).toDateString()}
                   </Text>
                   <Text style={{ color: 'black', fontSize: 14 }}>
-                    Last updated on {new Date(Number(item.updatedAt)).toDateString()}
+                    {item.updatedAt &&
+                      `Last updated on ${new Date(Number(item.updatedAt)).toDateString()}`}
                   </Text>
                 </View>
               </Link>
@@ -105,7 +108,7 @@ export default function App() {
                 left: width * 0.5 - 30,
                 borderRadius: 99,
                 bottom: 20,
-                backgroundColor: 'black',
+                backgroundColor: '#4D88E9',
                 alignItems: 'center',
                 justifyContent: 'center',
                 opacity: pressed ? 0.85 : 1,

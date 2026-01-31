@@ -16,7 +16,7 @@ export const EntryRepository = {
       entry.language ?? null,
       entry.sourceUrl ?? null,
       entry.createdAt,
-      entry.updatedAt,
+      entry.updatedAt ?? null,
     )
   },
 

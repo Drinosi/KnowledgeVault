@@ -8,5 +8,5 @@ export interface Entry {
   language?: string | null
   sourceUrl?: string | null
   createdAt: number
-  updatedAt: number
+  updatedAt?: number | null
 }

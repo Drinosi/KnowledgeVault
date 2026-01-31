@@ -1,6 +1,6 @@
 import { Stack, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { View, Text, Pressable, TextInput } from 'react-native'
+import { View, Text, Pressable, TextInput, Image, ScrollView } from 'react-native'
 
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
@@ -25,8 +25,6 @@ export default function EntryDetails() {
 
   const params = useLocalSearchParams()
 
-  console.log(data)
-
   useEffect(() => {
     ;(async () => {
       const response = await EntryRepository.getById(params.entry as string)
@@ -45,7 +43,6 @@ export default function EntryDetails() {
     if (!data) return
 
     const entryId = Array.isArray(params.entry) ? params.entry[0] : params.entry
-
     const changes: Partial<Entry> = {
       title,
       content,
@@ -81,9 +78,36 @@ export default function EntryDetails() {
           headerBackVisible: false,
         }}
       />
-      <View style={{ padding: 6, marginTop: 100 }}>
+      <ScrollView style={{ padding: 20, marginTop: 20 }}>
+        <Image
+          style={{ width: 150, marginTop: -20, height: 150 }}
+          source={require('../../assets/images/home_background.png')}
+        />
         {!editOpen ? (
-          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{data.title}</Text>
+          <>
+            <Text style={{ fontSize: 32 }}>{data.title}</Text>
+            <Text style={{ fontSize: 14, marginTop: 12, color: 'grey' }}>
+              {new Date(data.createdAt).toLocaleString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </Text>
+            {data.updatedAt && (
+              <Text style={{ fontSize: 14, marginTop: 4, color: 'grey' }}>
+                Last updated on{' '}
+                {new Date(data.createdAt).toLocaleString(undefined, {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </Text>
+            )}
+          </>
         ) : (
           <TextInput
             placeholderTextColor="grey"
@@ -95,7 +119,23 @@ export default function EntryDetails() {
         )}
 
         {!editOpen ? (
-          <Markdown>{data.content}</Markdown>
+          <View
+            style={{
+              padding: 20,
+              borderRadius: 20,
+              backgroundColor: 'white',
+              borderWidth: 1,
+              borderColor: 'lightgrey',
+              marginBottom: 40,
+              marginTop: 20,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.05,
+              shadowRadius: 3.84,
+            }}
+          >
+            <Markdown>{data.content}</Markdown>
+          </View>
         ) : (
           <TextInput
             placeholderTextColor="grey"
@@ -128,7 +168,7 @@ export default function EntryDetails() {
             {editOpen ? 'Save' : 'Edit'}
           </Text>
         </Pressable>
-      </View>
+      </ScrollView>
     </>
   )
 }
