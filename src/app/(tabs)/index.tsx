@@ -169,9 +169,9 @@ export default function App() {
         </SafeAreaProvider>
       )}
 
-      {createOpen && (
+      <View style={{ display: `${createOpen ? 'flex' : 'none'}` }}>
         <CreateEntryForm visible={createOpen} setVisible={setCreateOpen} onSubmit={handleCreate} />
-      )}
+      </View>
     </View>
   )
 }
