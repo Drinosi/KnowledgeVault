@@ -6,7 +6,7 @@ import { Link } from 'expo-router'
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 import { v4 as uuidv4 } from 'uuid'
 
-import CreateEntryForm from '../../components/CreateEntry'
+import CreateSnippetModal from '../../components/CreateSnippet'
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
 import { runMigrations } from '../../db/migrations'
@@ -14,6 +14,8 @@ import { runMigrations } from '../../db/migrations'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '../../store'
 import { addEntry, setEntries } from '../../store/slices/entriesSlice'
+
+import SnippetCard from '../../components/SnippetCard'
 
 const { width } = Dimensions.get('window')
 
@@ -46,8 +48,6 @@ export default function App() {
     setCreateOpen(false)
   }
 
-  console.log(entries)
-
   return (
     <View style={{ flex: 1 }}>
       {entries.length ? (
@@ -57,45 +57,7 @@ export default function App() {
             data={entries}
             keyExtractor={item => item.id}
             numColumns={2}
-            renderItem={({ item }) => (
-              <Link
-                style={{
-                  flex: 1,
-                  margin: 6,
-                  maxHeight: 200,
-                  overflow: 'hidden',
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.05,
-                  shadowRadius: 3.84,
-                  backgroundColor: 'white',
-                  elevation: 5,
-                  borderRadius: 12,
-                }}
-                href={{
-                  pathname: '[entry]/EntryDetails',
-                  params: { entry: item.id },
-                }}
-              >
-                <View style={{ padding: 10, height: '100%', width: '100%' }}>
-                  <Text
-                    style={{ color: 'black', fontSize: 18, fontWeight: '700', marginBottom: 12 }}
-                  >
-                    {item.title}
-                  </Text>
-                  <Text style={{ color: 'black', fontSize: 14, marginBottom: 8 }}>
-                    {item.content}
-                  </Text>
-                  <Text style={{ color: 'black', fontSize: 14, marginBottom: 4 }}>
-                    Created on {new Date(Number(item.createdAt)).toDateString()}
-                  </Text>
-                  <Text style={{ color: 'black', fontSize: 14 }}>
-                    {item.updatedAt &&
-                      `Last updated on ${new Date(Number(item.updatedAt)).toDateString()}`}
-                  </Text>
-                </View>
-              </Link>
-            )}
+            renderItem={({ item }) => <SnippetCard item={item} />}
           />
           <Pressable
             onPress={() => setCreateOpen(true)}
@@ -173,7 +135,11 @@ export default function App() {
       )}
 
       <View style={{ display: `${createOpen ? 'flex' : 'none'}` }}>
-        <CreateEntryForm visible={createOpen} setVisible={setCreateOpen} onSubmit={handleCreate} />
+        <CreateSnippetModal
+          visible={createOpen}
+          setVisible={setCreateOpen}
+          onSubmit={handleCreate}
+        />
       </View>
     </View>
   )

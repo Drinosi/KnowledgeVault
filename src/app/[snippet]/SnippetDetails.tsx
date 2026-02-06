@@ -10,7 +10,7 @@ import { AppDispatch } from '../../store'
 import { useDispatch } from 'react-redux'
 import { updateEntry } from '../../store/slices/entriesSlice'
 
-export default function EntryDetails() {
+export default function SnippetDetails() {
   const [data, setData] = useState<Entry>()
   const [editOpen, setEditOpen] = useState(false)
 
@@ -27,7 +27,8 @@ export default function EntryDetails() {
 
   useEffect(() => {
     ;(async () => {
-      const response = await EntryRepository.getById(params.entry as string)
+      const response = await EntryRepository.getById(params.snippet as string)
+
       if (response) {
         setData(response)
         setTitle(response.title)

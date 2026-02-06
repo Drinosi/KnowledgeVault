@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Entry } from '../../domain/Entry'
 
-interface EntriesState {
+type EntriesState = {
   entries: Entry[]
 }
 

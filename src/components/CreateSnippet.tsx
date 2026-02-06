@@ -17,7 +17,7 @@ type props = {
   }) => void
 }
 
-export default function CreateEntryModal({ visible, setVisible, onSubmit }: props) {
+export default function CreateSnippetModal({ visible, setVisible, onSubmit }: props) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [type, setType] = useState<'snippet' | 'concept' | 'link'>('snippet')
@@ -78,7 +78,7 @@ export default function CreateEntryModal({ visible, setVisible, onSubmit }: prop
                     borderBottomColor: '#c7c9d0',
                   }}
                 >
-                  Add entry
+                  Add new snippet
                 </Text>
               </View>
 

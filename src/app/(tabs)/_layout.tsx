@@ -1,8 +1,5 @@
 import { Tabs } from 'expo-router'
-
-import Entypo from '@expo/vector-icons/Entypo'
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
-import Ionicons from '@expo/vector-icons/Ionicons'
+import { Entypo, FontAwesome6, Ionicons } from '@expo/vector-icons'
 
 export default function TabLayout() {
   return (

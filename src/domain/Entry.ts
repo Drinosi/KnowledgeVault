@@ -1,6 +1,6 @@
 export type EntryType = 'snippet' | 'concept' | 'link'
 
-export interface Entry {
+export type Entry = {
   id: string
   title: string
   content: string
