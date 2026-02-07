@@ -7,6 +7,22 @@ type SnippetCardProps = {
 }
 
 const SnippetCard = ({ item }: SnippetCardProps) => {
+  let snippetTypeColor
+
+  switch (item.type) {
+    case 'snippet':
+      snippetTypeColor = '#618ae2'
+      break
+    case 'link':
+      snippetTypeColor = '#9866D3'
+      break
+    case 'concept':
+      snippetTypeColor = '#e3aa49'
+      break
+    default:
+      snippetTypeColor = '#E8F1FF'
+  }
+
   return (
     <Link
       style={{
@@ -27,15 +43,31 @@ const SnippetCard = ({ item }: SnippetCardProps) => {
         params: { snippet: item.id },
       }}
     >
-      <View style={{ padding: 10, height: '100%', width: '100%' }}>
-        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700', marginBottom: 12 }}>
-          {item.title}
+      <View style={{ padding: 10, width: '100%' }}>
+        <Text style={{ color: 'black', fontSize: 30, marginBottom: 12 }}>{item.title}</Text>
+        <Text
+          style={{
+            backgroundColor: snippetTypeColor,
+            color: 'white',
+            fontSize: 12,
+            borderRadius: 12,
+            marginBottom: 8,
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+            alignSelf: 'flex-start',
+          }}
+        >
+          {item.type}
         </Text>
-        <Text style={{ color: 'black', fontSize: 14, marginBottom: 8 }}>{item.content}</Text>
-        <Text style={{ color: 'black', fontSize: 14, marginBottom: 4 }}>
+
+        <Text style={{ color: '#777C8E', fontSize: 14, marginBottom: 8 }}>
+          {item.content.slice(0, 100)}
+          {item.content.length >= 100 && '...'}
+        </Text>
+        <Text style={{ color: '#C2C7D4', fontSize: 14, marginBottom: 4 }}>
           Created on {new Date(Number(item.createdAt)).toDateString()}
         </Text>
-        <Text style={{ color: 'black', fontSize: 14 }}>
+        <Text style={{ color: '#C2C7D4', fontSize: 14 }}>
           {item.updatedAt && `Last updated on ${new Date(Number(item.updatedAt)).toDateString()}`}
         </Text>
       </View>

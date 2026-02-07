@@ -27,10 +27,10 @@ export default function App() {
   useEffect(() => {
     ;(async () => {
       await runMigrations()
-      const allEntries = await EntryRepository.getAll()
+      const allEntries = await EntryRepository.getAll('DESC')
       dispatch(setEntries(allEntries))
     })()
-  }, [])
+  }, [entries])
 
   const handleCreate = async (entryData: Omit<Entry, 'id' | 'createdAt' | 'updatedAt'>) => {
     const now = Date.now()
@@ -56,7 +56,7 @@ export default function App() {
             style={{ padding: 4, marginBottom: 8 }}
             data={entries}
             keyExtractor={item => item.id}
-            numColumns={2}
+            numColumns={1}
             renderItem={({ item }) => <SnippetCard item={item} />}
           />
           <Pressable

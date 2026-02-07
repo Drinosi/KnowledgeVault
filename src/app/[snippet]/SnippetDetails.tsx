@@ -43,7 +43,7 @@ export default function SnippetDetails() {
   async function handleEdit() {
     if (!data) return
 
-    const entryId = Array.isArray(params.entry) ? params.entry[0] : params.entry
+    const entryId = Array.isArray(params.snippet) ? params.snippet[0] : params.snippet
     const changes: Partial<Entry> = {
       title,
       content,
@@ -52,6 +52,17 @@ export default function SnippetDetails() {
       sourceUrl,
     }
 
+    const hasChanges =
+      data.title !== title ||
+      data.content !== content ||
+      data.type !== type ||
+      (data.language ?? '') !== language ||
+      (data.sourceUrl ?? '') !== sourceUrl
+
+    if (!hasChanges) {
+      setEditOpen(false)
+      return
+    }
     await EntryRepository.update(entryId, changes)
 
     const updatedEntry: Entry = {
@@ -59,6 +70,7 @@ export default function SnippetDetails() {
       ...changes,
       updatedAt: Date.now(),
     }
+
     dispatch(updateEntry(updatedEntry))
 
     setEdited(prev => !prev)
@@ -113,7 +125,13 @@ export default function SnippetDetails() {
           <TextInput
             placeholderTextColor="grey"
             placeholder={data.title}
-            style={{ backgroundColor: 'white', padding: 10, margin: 8, color: 'black' }}
+            style={{
+              padding: 20,
+              borderRadius: 20,
+              backgroundColor: 'white',
+
+              marginTop: 20,
+            }}
             value={title}
             onChangeText={setTitle}
           />
@@ -142,11 +160,12 @@ export default function SnippetDetails() {
             placeholderTextColor="grey"
             placeholder={data.content}
             style={{
+              padding: 20,
+              borderRadius: 20,
               backgroundColor: 'white',
-              padding: 10,
-              margin: 8,
-              color: 'black',
-              minHeight: 100,
+
+              marginBottom: 40,
+              marginTop: 20,
             }}
             value={content}
             onChangeText={setContent}
@@ -163,10 +182,15 @@ export default function SnippetDetails() {
               setEditOpen(true)
             }
           }}
-          style={{ backgroundColor: editOpen ? 'green' : 'orangered', padding: 20, marginTop: 12 }}
+          style={{
+            backgroundColor: editOpen ? 'green' : 'orangered',
+            borderRadius: 20,
+            padding: 20,
+            marginTop: 12,
+          }}
         >
           <Text style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}>
-            {editOpen ? 'Save' : 'Edit'}
+            {editOpen ? 'Finish Edit' : 'Edit Snippet'}
           </Text>
         </Pressable>
       </ScrollView>

@@ -20,9 +20,11 @@ export const EntryRepository = {
     )
   },
 
-  async getAll(): Promise<Entry[]> {
+  async getAll(order: 'ASC' | 'DESC'): Promise<Entry[]> {
     const db = await openDB()
-    const rows: any[] = await db.getAllAsync('SELECT * FROM entries ORDER BY updated_at ASC')
+    const rows: any[] = await db.getAllAsync(
+      `SELECT * FROM entries ORDER BY COALESCE(updated_at, created_at) ${order}`,
+    )
     return rows.map(row => ({
       id: row.id,
       title: row.title,
