@@ -27,7 +27,7 @@ export default function App() {
   useEffect(() => {
     ;(async () => {
       await runMigrations()
-      const allEntries = await EntryRepository.getAll('DESC')
+      const allEntries = await EntryRepository.getAll(100, 0, 'DESC')
       dispatch(setEntries(allEntries))
     })()
   }, [entries])

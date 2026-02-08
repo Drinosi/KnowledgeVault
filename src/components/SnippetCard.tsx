@@ -60,10 +60,7 @@ const SnippetCard = ({ item }: SnippetCardProps) => {
           {item.type}
         </Text>
 
-        <Text style={{ color: '#777C8E', fontSize: 14, marginBottom: 8 }}>
-          {item.content.slice(0, 100)}
-          {item.content.length >= 100 && '...'}
-        </Text>
+        <Text style={{ color: '#777C8E', fontSize: 14, marginBottom: 8 }}>{item.content}</Text>
         <Text style={{ color: '#C2C7D4', fontSize: 14, marginBottom: 4 }}>
           Created on {new Date(Number(item.createdAt)).toDateString()}
         </Text>

@@ -4,6 +4,7 @@ import { View, Text, Pressable, TextInput, Image, ScrollView } from 'react-nativ
 
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
+
 import Markdown from 'react-native-markdown-display'
 
 import { AppDispatch } from '../../store'
@@ -76,12 +77,13 @@ export default function SnippetDetails() {
     setEdited(prev => !prev)
   }
 
-  if (!data)
+  if (!data) {
     return (
       <View style={{ padding: 20 }}>
         <Text>There was a problem showing this Entry</Text>
       </View>
     )
+  }
 
   return (
     <>
@@ -91,26 +93,18 @@ export default function SnippetDetails() {
           headerBackVisible: false,
         }}
       />
-      <ScrollView style={{ padding: 20, marginTop: 20 }}>
-        <Image
-          style={{ width: 150, marginTop: -20, height: 150 }}
-          source={require('../../assets/images/home_background.png')}
-        />
-        {!editOpen ? (
-          <>
-            <Text style={{ fontSize: 32 }}>{data.title}</Text>
-            <Text style={{ fontSize: 14, marginTop: 12, color: 'grey' }}>
-              {new Date(data.createdAt).toLocaleString(undefined, {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </Text>
-            {data.updatedAt && (
-              <Text style={{ fontSize: 14, marginTop: 4, color: 'grey' }}>
-                Last updated on{' '}
+
+      <View style={{ flex: 1 }}>
+        <ScrollView style={{ padding: 20, marginTop: 20 }} contentContainerStyle={{ flexGrow: 1 }}>
+          <Image
+            style={{ width: 150, marginTop: -20, height: 150 }}
+            source={require('../../assets/images/home_background.png')}
+          />
+
+          {!editOpen ? (
+            <>
+              <Text style={{ fontSize: 32 }}>{data.title}</Text>
+              <Text style={{ fontSize: 14, marginTop: 12, color: 'grey' }}>
                 {new Date(data.createdAt).toLocaleString(undefined, {
                   year: 'numeric',
                   month: 'long',
@@ -119,59 +113,65 @@ export default function SnippetDetails() {
                   minute: '2-digit',
                 })}
               </Text>
-            )}
-          </>
-        ) : (
-          <TextInput
-            placeholderTextColor="grey"
-            placeholder={data.title}
-            style={{
-              padding: 20,
-              borderRadius: 20,
-              backgroundColor: 'white',
+              {data.updatedAt && (
+                <Text style={{ fontSize: 14, color: 'grey' }}>
+                  Last updated on{' '}
+                  {new Date(data.updatedAt).toLocaleString(undefined, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </Text>
+              )}
+            </>
+          ) : (
+            <TextInput
+              placeholderTextColor="grey"
+              placeholder={data.title}
+              style={{
+                padding: 20,
+                borderRadius: 20,
+                backgroundColor: 'white',
+                marginTop: 20,
+              }}
+              value={title}
+              onChangeText={setTitle}
+            />
+          )}
 
-              marginTop: 20,
-            }}
-            value={title}
-            onChangeText={setTitle}
-          />
-        )}
-
-        {!editOpen ? (
-          <View
-            style={{
-              padding: 20,
-              borderRadius: 20,
-              backgroundColor: 'white',
-              borderWidth: 1,
-              borderColor: 'lightgrey',
-              marginBottom: 40,
-              marginTop: 20,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.05,
-              shadowRadius: 3.84,
-            }}
-          >
-            <Markdown>{data.content}</Markdown>
-          </View>
-        ) : (
-          <TextInput
-            placeholderTextColor="grey"
-            placeholder={data.content}
-            style={{
-              padding: 20,
-              borderRadius: 20,
-              backgroundColor: 'white',
-
-              marginBottom: 40,
-              marginTop: 20,
-            }}
-            value={content}
-            onChangeText={setContent}
-            multiline
-          />
-        )}
+          {!editOpen ? (
+            <View
+              style={{
+                padding: 20,
+                borderRadius: 20,
+                backgroundColor: 'white',
+                borderWidth: 1,
+                borderColor: 'lightgrey',
+                marginBottom: 40,
+                marginTop: 20,
+              }}
+            >
+              <Markdown>{data.content}</Markdown>
+            </View>
+          ) : (
+            <TextInput
+              placeholderTextColor="grey"
+              placeholder={data.content}
+              style={{
+                padding: 20,
+                borderRadius: 20,
+                backgroundColor: 'white',
+                marginBottom: 40,
+                marginTop: 20,
+              }}
+              value={content}
+              onChangeText={setContent}
+              multiline
+            />
+          )}
+        </ScrollView>
 
         <Pressable
           onPress={async () => {
@@ -186,14 +186,14 @@ export default function SnippetDetails() {
             backgroundColor: editOpen ? 'green' : 'orangered',
             borderRadius: 20,
             padding: 20,
-            marginTop: 12,
+            margin: 20,
           }}
         >
           <Text style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}>
             {editOpen ? 'Finish Edit' : 'Edit Snippet'}
           </Text>
         </Pressable>
-      </ScrollView>
+      </View>
     </>
   )
 }
