@@ -48,10 +48,9 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
+
     borderRadius: 8,
-    padding: 12,
+    padding: 14,
     marginRight: 8,
     color: 'black',
     backgroundColor: 'white',

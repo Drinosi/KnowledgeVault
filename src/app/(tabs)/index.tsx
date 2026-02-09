@@ -1,15 +1,13 @@
 import 'react-native-get-random-values'
 
 import { useEffect, useState } from 'react'
-import { Text, View, FlatList, Image, Pressable, Dimensions } from 'react-native'
-import { Link } from 'expo-router'
+import { Text, View, FlatList, Image, Pressable, Dimensions, StyleSheet } from 'react-native'
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 import { v4 as uuidv4 } from 'uuid'
 
 import CreateSnippetModal from '../../components/CreateSnippet'
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
-import { runMigrations } from '../../db/migrations'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '../../store'
@@ -76,7 +74,7 @@ export default function App() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.wrapper}>
       {entries.length ? (
         <>
           <FilterAndSearch
@@ -85,7 +83,7 @@ export default function App() {
             setSortAscending={setSortAscending}
           />
           <FlatList
-            style={{ padding: 4, marginBottom: 8 }}
+            style={styles.grid}
             data={filteredEntries}
             keyExtractor={item => item.id}
             numColumns={1}
@@ -93,73 +91,32 @@ export default function App() {
           />
           <Pressable
             onPress={() => setCreateOpen(true)}
-            style={({ pressed }) => [
-              {
-                height: 60,
-                position: 'absolute',
-                zIndex: 9999,
-                width: 60,
-                left: width * 0.5 - 30,
-                borderRadius: 99,
-                bottom: 20,
-                backgroundColor: '#4D88E9',
-                alignItems: 'center',
-                justifyContent: 'center',
-                opacity: pressed ? 0.85 : 1,
-              },
-            ]}
+            style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1 }, styles.addSnippet]}
           >
-            <Text style={{ color: '#FFFFFF', fontSize: 30, marginBottom: 4, textAlign: 'center' }}>
-              +
-            </Text>
+            <Text style={styles.addSnippetText}>+</Text>
           </Pressable>
         </>
       ) : (
         <SafeAreaProvider>
-          <SafeAreaView
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              position: 'absolute',
-              inset: 0,
-            }}
-          >
+          <SafeAreaView style={styles.emptyStateWrapper}>
             <Image
-              style={{
-                width: '100%',
-                height: 285,
-              }}
+              style={styles.homeImage}
               source={require('../../assets/images/home_background.png')}
             />
             <View>
-              <Text
-                style={{ textAlign: 'center', fontSize: 20, marginBottom: 12, fontWeight: 600 }}
-              >
-                No Snippets Yet
-              </Text>
-              <Text style={{ textAlign: 'center', fontSize: 16, color: 'grey', marginBottom: 30 }}>
-                Get started by adding a new snippet
-              </Text>
+              <Text style={styles.noSnippetsText}>No Snippets Yet</Text>
+              <Text style={styles.noSnippetsDescription}>Get started by adding a new snippet</Text>
 
               <Pressable
                 onPress={() => setCreateOpen(true)}
                 style={({ pressed }) => [
                   {
-                    height: 52,
-                    width: 300,
-                    marginBottom: 8,
-                    borderRadius: 9999,
-                    backgroundColor: '#4D88E9',
-                    alignItems: 'center',
-                    justifyContent: 'center',
                     opacity: pressed ? 0.85 : 1,
                   },
+                  styles.emptyAddSnippet,
                 ]}
               >
-                <Text style={{ color: '#FFFFFF', fontSize: 20, fontWeight: '600' }}>
-                  + Add entry
-                </Text>
+                <Text style={styles.emptyAddSnippetText}>+ Add entry</Text>
               </Pressable>
             </View>
           </SafeAreaView>
@@ -176,3 +133,68 @@ export default function App() {
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+  },
+  grid: {
+    padding: 4,
+    marginBottom: 8,
+  },
+  addSnippet: {
+    height: 60,
+    position: 'absolute',
+    zIndex: 9999,
+    width: 60,
+    left: width * 0.5 - 30,
+    borderRadius: 99,
+    bottom: 20,
+    backgroundColor: '#4D88E9',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addSnippetText: {
+    color: '#FFFFFF',
+    fontSize: 30,
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  emptyStateWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    inset: 0,
+  },
+  homeImage: {
+    width: '100%',
+    height: 285,
+  },
+  noSnippetsText: {
+    textAlign: 'center',
+    fontSize: 20,
+    marginBottom: 12,
+    fontWeight: 600,
+  },
+  noSnippetsDescription: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: 'grey',
+    marginBottom: 30,
+  },
+  emptyAddSnippet: {
+    height: 52,
+    width: 300,
+    marginBottom: 8,
+    borderRadius: 9999,
+    backgroundColor: '#4D88E9',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyAddSnippetText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '600',
+  },
+})

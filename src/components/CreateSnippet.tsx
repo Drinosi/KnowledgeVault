@@ -26,7 +26,9 @@ export default function CreateSnippetModal({ visible, setVisible, onSubmit }: pr
 
   const handleSubmit = () => {
     if (!title || !content || !type) return
+
     onSubmit({ title, content, type, language, sourceUrl })
+
     setTitle('')
     setContent('')
     setType('snippet')
@@ -36,50 +38,19 @@ export default function CreateSnippetModal({ visible, setVisible, onSubmit }: pr
 
   return (
     <View>
-      <Modal
-        style={{ backgroundColor: 'black' }}
-        visible={visible}
-        animationType="slide"
-        transparent={false}
-      >
+      <Modal visible={visible} animationType="slide" transparent={false}>
         <KeyboardAwareScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-              <View
-                style={{
-                  height: 120,
-                  marginLeft: -30,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
+              <View style={styles.headerRow}>
                 <Image
-                  style={{
-                    width: 140,
-                    height: 140,
-                  }}
+                  style={styles.headerImage}
                   source={require('../assets/images/home_background.png')}
                 />
-                <Text
-                  style={{
-                    fontSize: 20,
-                    alignSelf: 'baseline',
-                    borderBottomWidth: 1,
-                    flex: 1,
-                    paddingBottom: 20,
-                    paddingLeft: 20,
-                    borderBottomColor: '#c7c9d0',
-                  }}
-                >
-                  Add new snippet
-                </Text>
+                <Text style={styles.headerText}>Add new snippet</Text>
               </View>
 
               <Text style={styles.label}>Title</Text>
@@ -90,68 +61,46 @@ export default function CreateSnippetModal({ visible, setVisible, onSubmit }: pr
                 style={styles.input}
                 placeholderTextColor="lightgrey"
               />
+
               <Text style={styles.label}>Type</Text>
               <View style={styles.pickerWrapper}>
                 <Picker
-                  itemStyle={{ fontSize: 18, textAlign: 'center', color: '#8b8c91' }}
-                  style={{
-                    width: '100%',
-                    flex: 1,
-                    justifyContent: 'center',
-                  }}
+                  itemStyle={styles.pickerItem}
+                  style={styles.picker}
                   selectedValue={type}
-                  onValueChange={value => {
-                    setType(value)
-                  }}
+                  onValueChange={value => setType(value)}
                 >
                   <Picker.Item label="Snippet" value="snippet" />
                   <Picker.Item label="Concept" value="concept" />
                   <Picker.Item label="Link" value="link" />
                 </Picker>
               </View>
+
               <Text style={styles.label}>Description</Text>
               <TextInput
                 placeholder="Enter a description"
                 placeholderTextColor="lightgrey"
                 value={content}
                 onChangeText={setContent}
-                style={{
-                  minHeight: 150,
-                  backgroundColor: 'white',
-                  padding: 6,
-                  fontSize: 16,
-                  borderRadius: 8,
-                  color: '#8b8c91',
-                  marginBottom: 12,
-                  borderWidth: 1,
-                  borderColor: '#c7c9d0',
-                }}
+                style={styles.descriptionInput}
                 multiline
               />
 
-              <TextInput
-                placeholder="Source URL (optional)"
-                placeholderTextColor="lightgrey"
-                value={sourceUrl}
-                onChangeText={setSourceUrl}
-                style={{
-                  backgroundColor: 'white',
-                  padding: 6,
-                  fontSize: 16,
-                  height: 45,
-                  color: '#8b8c91',
-                  borderRadius: 8,
-                  borderWidth: 1,
-                  borderColor: '#c7c9d0',
-                  marginBottom: 12,
-                  display: `${type === 'link' ? 'flex' : 'none'}`,
-                }}
-              />
+              {type === 'link' && (
+                <TextInput
+                  placeholder="Source URL (optional)"
+                  placeholderTextColor="lightgrey"
+                  value={sourceUrl}
+                  onChangeText={setSourceUrl}
+                  style={styles.urlInput}
+                />
+              )}
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <View style={styles.buttonRow}>
                 <Pressable style={styles.cancelButton} onPress={() => setVisible(false)}>
                   <Text style={styles.cancelButtonText}>Cancel</Text>
                 </Pressable>
+
                 <Pressable style={styles.button} onPress={handleSubmit}>
                   <Text style={styles.buttonText}>Create Snippet</Text>
                 </Pressable>
@@ -165,30 +114,12 @@ export default function CreateSnippetModal({ visible, setVisible, onSubmit }: pr
 }
 
 const styles = StyleSheet.create({
-  openButton: {
-    marginTop: 50,
-    padding: 12,
-    backgroundColor: '#000',
-    borderRadius: 8,
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  openButtonText: {
-    color: 'white',
-    fontWeight: '600',
-  },
-  pickerWrapper: {
-    borderRadius: 8,
-    maxHeight: 150,
-    minHeight: 150,
-    marginBottom: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#c7c9d0',
-    color: 'black',
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'white',
-  },
+
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.6)',
@@ -196,13 +127,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
+
   modalContent: {
     width: '90%',
-    height: 'auto',
     backgroundColor: 'white',
     borderRadius: 12,
     padding: 16,
   },
+
+  headerRow: {
+    height: 120,
+    marginLeft: -30,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  headerImage: {
+    width: 140,
+    height: 140,
+  },
+
+  headerText: {
+    fontSize: 20,
+    alignSelf: 'baseline',
+    borderBottomWidth: 1,
+    flex: 1,
+    paddingBottom: 20,
+    paddingLeft: 20,
+    borderBottomColor: '#c7c9d0',
+  },
+
+  label: {
+    color: '#c7c9d0',
+    marginBottom: 8,
+    fontWeight: '600',
+    fontSize: 16,
+  },
+
   input: {
     padding: 6,
     borderWidth: 1,
@@ -214,6 +175,62 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     backgroundColor: 'white',
   },
+
+  descriptionInput: {
+    minHeight: 150,
+    backgroundColor: 'white',
+    padding: 6,
+    fontSize: 16,
+    borderRadius: 8,
+    color: '#8b8c91',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#c7c9d0',
+  },
+
+  urlInput: {
+    backgroundColor: 'white',
+    padding: 6,
+    fontSize: 16,
+    height: 45,
+    color: '#8b8c91',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#c7c9d0',
+    marginBottom: 12,
+  },
+
+  pickerWrapper: {
+    borderRadius: 8,
+    maxHeight: 150,
+    minHeight: 150,
+    marginBottom: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#c7c9d0',
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+
+  picker: {
+    width: '100%',
+    flex: 1,
+    justifyContent: 'center',
+  },
+
+  pickerItem: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#8b8c91',
+  },
+
+  buttonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+
   button: {
     paddingHorizontal: 24,
     paddingVertical: 10,
@@ -222,10 +239,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
+
   buttonText: {
     color: 'white',
     fontSize: 18,
   },
+
   cancelButton: {
     paddingHorizontal: 24,
     paddingVertical: 10,
@@ -236,14 +255,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
   },
+
   cancelButtonText: {
     color: 'grey',
     fontSize: 18,
-  },
-  label: {
-    color: '#c7c9d0',
-    marginBottom: 8,
-    fontWeight: 600,
-    fontSize: 16,
   },
 })

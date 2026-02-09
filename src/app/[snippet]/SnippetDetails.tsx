@@ -1,6 +1,6 @@
 import { Stack, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { View, Text, Pressable, TextInput, Image, ScrollView } from 'react-native'
+import { View, Text, Pressable, TextInput, Image, ScrollView, StyleSheet } from 'react-native'
 
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
@@ -64,6 +64,7 @@ export default function SnippetDetails() {
       setEditOpen(false)
       return
     }
+
     await EntryRepository.update(entryId, changes)
 
     const updatedEntry: Entry = {
@@ -73,13 +74,12 @@ export default function SnippetDetails() {
     }
 
     dispatch(updateEntry(updatedEntry))
-
     setEdited(prev => !prev)
   }
 
   if (!data) {
     return (
-      <View style={{ padding: 20 }}>
+      <View style={styles.errorContainer}>
         <Text>There was a problem showing this Entry</Text>
       </View>
     )
@@ -94,84 +94,66 @@ export default function SnippetDetails() {
         }}
       />
 
-      <View style={{ flex: 1 }}>
-        <ScrollView style={{ padding: 20, marginTop: 20 }} contentContainerStyle={{ flexGrow: 1 }}>
-          <Image
-            style={{ width: 150, marginTop: -20, height: 150 }}
-            source={require('../../assets/images/home_background.png')}
-          />
+      <View style={styles.container}>
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+          <Image style={styles.image} source={require('../../assets/images/home_background.png')} />
+
+          <Text style={styles.dateText}>
+            {new Date(data.createdAt).toLocaleString(undefined, {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </Text>
+
+          {data.updatedAt && (
+            <Text style={styles.dateText}>
+              Last updated on{' '}
+              {new Date(data.updatedAt).toLocaleString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </Text>
+          )}
 
           {!editOpen ? (
-            <>
-              <Text style={{ fontSize: 32 }}>{data.title}</Text>
-              <Text style={{ fontSize: 14, marginTop: 12, color: 'grey' }}>
-                {new Date(data.createdAt).toLocaleString(undefined, {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </Text>
-              {data.updatedAt && (
-                <Text style={{ fontSize: 14, color: 'grey' }}>
-                  Last updated on{' '}
-                  {new Date(data.updatedAt).toLocaleString(undefined, {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </Text>
-              )}
-            </>
+            <Text style={styles.title}>{data.title}</Text>
           ) : (
             <TextInput
               placeholderTextColor="grey"
               placeholder={data.title}
-              style={{
-                padding: 20,
-                borderRadius: 20,
-                backgroundColor: 'white',
-                marginTop: 20,
-              }}
+              style={styles.titleInput}
               value={title}
               onChangeText={setTitle}
             />
           )}
 
           {!editOpen ? (
-            <View
-              style={{
-                padding: 20,
-                borderRadius: 20,
-                backgroundColor: 'white',
-                borderWidth: 1,
-                borderColor: 'lightgrey',
-                marginBottom: 40,
-                marginTop: 20,
-              }}
-            >
+            <View style={styles.contentContainer}>
               <Markdown>{data.content}</Markdown>
             </View>
           ) : (
             <TextInput
               placeholderTextColor="grey"
               placeholder={data.content}
-              style={{
-                padding: 20,
-                borderRadius: 20,
-                backgroundColor: 'white',
-                marginBottom: 40,
-                marginTop: 20,
-              }}
+              style={styles.contentInput}
               value={content}
               onChangeText={setContent}
               multiline
             />
           )}
         </ScrollView>
+
+        {editOpen && (
+          <Pressable onPress={() => setEditOpen(false)} style={styles.cancelButton}>
+            <Text style={styles.cancelButtonText}>Cancel edit</Text>
+          </Pressable>
+        )}
 
         <Pressable
           onPress={async () => {
@@ -182,18 +164,108 @@ export default function SnippetDetails() {
               setEditOpen(true)
             }
           }}
-          style={{
-            backgroundColor: editOpen ? 'green' : 'orangered',
-            borderRadius: 20,
-            padding: 20,
-            margin: 20,
-          }}
+          style={[styles.editButton, editOpen ? styles.finishButton : styles.startEditButton]}
         >
-          <Text style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}>
-            {editOpen ? 'Finish Edit' : 'Edit Snippet'}
-          </Text>
+          <Text style={styles.editButtonText}>{editOpen ? 'Finish Edit' : 'Edit Snippet'}</Text>
         </Pressable>
       </View>
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+
+  scroll: {
+    padding: 20,
+    marginTop: 20,
+  },
+
+  scrollContent: {
+    flexGrow: 1,
+  },
+
+  image: {
+    width: 150,
+    height: 150,
+    marginTop: -20,
+  },
+
+  dateText: {
+    fontSize: 14,
+    marginTop: 12,
+    color: 'grey',
+  },
+
+  title: {
+    fontSize: 32,
+  },
+
+  titleInput: {
+    padding: 20,
+    borderRadius: 20,
+    fontSize: 32,
+    backgroundColor: 'white',
+    marginTop: 20,
+  },
+
+  contentContainer: {
+    padding: 20,
+    borderRadius: 20,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'lightgrey',
+    marginBottom: 40,
+    marginTop: 20,
+  },
+
+  contentInput: {
+    padding: 20,
+    borderRadius: 20,
+    backgroundColor: 'white',
+    marginBottom: 40,
+    marginTop: 20,
+  },
+
+  cancelButton: {
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'grey',
+    borderRadius: 20,
+    padding: 20,
+    margin: 20,
+  },
+
+  cancelButtonText: {
+    color: 'black',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+
+  editButton: {
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 20,
+    marginHorizontal: 20,
+  },
+
+  startEditButton: {
+    backgroundColor: 'orangered',
+  },
+
+  finishButton: {
+    backgroundColor: 'green',
+  },
+
+  editButtonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+
+  errorContainer: {
+    padding: 20,
+  },
+})
