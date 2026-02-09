@@ -16,21 +16,48 @@ import { RootState, AppDispatch } from '../../store'
 import { addEntry, setEntries } from '../../store/slices/entriesSlice'
 
 import SnippetCard from '../../components/SnippetCard'
+import FilterAndSearch from '../../components/FilterAndSearch'
 
 const { width } = Dimensions.get('window')
 
 export default function App() {
   const dispatch: AppDispatch = useDispatch()
-  const entries = useSelector((state: RootState) => state.entries.entries)
+
   const [createOpen, setCreateOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortAscending, setSortAscending] = useState(false)
+
+  const entries = useSelector((state: RootState) => state.entries.entries)
+  const [filteredEntries, setFilteredEntries] = useState<Entry[]>(entries)
 
   useEffect(() => {
     ;(async () => {
-      await runMigrations()
-      const allEntries = await EntryRepository.getAll(100, 0, 'DESC')
-      dispatch(setEntries(allEntries))
+      const results = await EntryRepository.getAll(100, 0, sortType)
+
+      dispatch(setEntries(results))
     })()
-  }, [entries])
+  }, [sortAscending, searchQuery])
+
+  const sortType = sortAscending ? 'ASC' : 'DESC'
+
+  useEffect(() => {
+    let data = [...entries]
+
+    if (searchQuery.trim() !== '') {
+      const q = searchQuery.toLowerCase()
+      data = data.filter(
+        e => e.title.toLowerCase().includes(q) || e.content.toLowerCase().includes(q),
+      )
+    }
+
+    data.sort((a, b) => {
+      const aTime = a.updatedAt ?? a.createdAt
+      const bTime = b.updatedAt ?? b.createdAt
+      return sortAscending ? aTime - bTime : bTime - aTime
+    })
+
+    setFilteredEntries(data)
+  }, [entries, searchQuery, sortAscending])
 
   const handleCreate = async (entryData: Omit<Entry, 'id' | 'createdAt' | 'updatedAt'>) => {
     const now = Date.now()
@@ -52,9 +79,14 @@ export default function App() {
     <View style={{ flex: 1 }}>
       {entries.length ? (
         <>
+          <FilterAndSearch
+            sortAscending={sortAscending}
+            setSearchQuery={setSearchQuery}
+            setSortAscending={setSortAscending}
+          />
           <FlatList
             style={{ padding: 4, marginBottom: 8 }}
-            data={entries}
+            data={filteredEntries}
             keyExtractor={item => item.id}
             numColumns={1}
             renderItem={({ item }) => <SnippetCard item={item} />}

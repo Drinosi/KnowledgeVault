@@ -131,4 +131,37 @@ export const EntryRepository = {
 
     await db.runAsync(query, ...values)
   },
+
+  async search(searchText: string): Promise<Entry[]> {
+    const db = await openDB()
+
+    const rows: DBEntryRow[] = await db.getAllAsync(
+      `
+    SELECT 
+      id,
+      title,
+      substr(content, 1, 200) as content,
+      type,
+      language,
+      source_url,
+      created_at,
+      updated_at
+    FROM entries
+    WHERE title LIKE '%' || ? || '%'
+       OR content LIKE '%' || ? || '%'
+    `,
+      [searchText, searchText],
+    )
+
+    return rows.map(row => ({
+      id: row.id,
+      title: row.title,
+      content: row.content,
+      type: row.type as Entry['type'],
+      language: row.language,
+      sourceUrl: row.source_url,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    }))
+  },
 }
