@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   },
 
   cancelButtonText: {
-    color: 'black',
+    color: '#1a1a1a',
     textAlign: 'center',
     fontWeight: 'bold',
   },

@@ -1,4 +1,6 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { useMemo } from 'react'
+
+import { View, Text, StyleSheet, useColorScheme } from 'react-native'
 import { Link } from 'expo-router'
 import { Entry } from '../domain/Entry'
 
@@ -8,6 +10,10 @@ type SnippetCardProps = {
 
 const SnippetCard = ({ item }: SnippetCardProps) => {
   let snippetTypeColor
+  const colorScheme = useColorScheme()
+  const darkMode = colorScheme === 'dark'
+
+  const styles = useMemo(() => createStyles(darkMode), [darkMode])
 
   switch (item.type) {
     case 'snippet':
@@ -52,53 +58,54 @@ const SnippetCard = ({ item }: SnippetCardProps) => {
 
 export default SnippetCard
 
-const styles = StyleSheet.create({
-  card: {
-    flex: 1,
-    margin: 6,
-    maxHeight: 200,
-    overflow: 'hidden',
+const createStyles = (darkMode: boolean) =>
+  StyleSheet.create({
+    card: {
+      flex: 1,
+      margin: 6,
+      maxHeight: 200,
+      overflow: 'hidden',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.05,
+      shadowRadius: 3.84,
+      backgroundColor: darkMode ? '#1a1a1a' : 'white',
+      elevation: 5,
+      borderWidth: 1,
+      borderColor: darkMode ? 'white' : '#1a1a1a',
+      borderRadius: 12,
+    },
 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3.84,
+    content: {
+      padding: 10,
+      width: '100%',
+    },
 
-    backgroundColor: 'white',
-    elevation: 5,
-    borderRadius: 12,
-  },
+    title: {
+      color: darkMode ? 'white' : '#1a1a1a',
+      fontSize: 30,
+      marginBottom: 12,
+    },
 
-  content: {
-    padding: 10,
-    width: '100%',
-  },
+    typeBadge: {
+      color: 'white',
+      fontSize: 12,
+      borderRadius: 12,
+      marginBottom: 8,
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      alignSelf: 'flex-start',
+    },
 
-  title: {
-    color: 'black',
-    fontSize: 30,
-    marginBottom: 12,
-  },
+    description: {
+      color: darkMode ? 'white' : '#777C8E',
+      fontSize: 14,
+      marginBottom: 8,
+    },
 
-  typeBadge: {
-    color: 'white',
-    fontSize: 12,
-    borderRadius: 12,
-    marginBottom: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    alignSelf: 'flex-start',
-  },
-
-  description: {
-    color: '#777C8E',
-    fontSize: 14,
-    marginBottom: 8,
-  },
-
-  date: {
-    color: '#C2C7D4',
-    fontSize: 14,
-    marginBottom: 4,
-  },
-})
+    date: {
+      color: darkMode ? 'white' : '#C2C7D4',
+      fontSize: 14,
+      marginBottom: 4,
+    },
+  })

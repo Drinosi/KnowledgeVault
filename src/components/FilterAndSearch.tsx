@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { View, TextInput, Pressable, StyleSheet } from 'react-native'
+import React, { useState, useEffect, useMemo } from 'react'
+import { View, TextInput, Pressable, StyleSheet, useColorScheme } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 type Props = {
@@ -11,6 +11,9 @@ type Props = {
 const FilterAndSearch = ({ sortAscending, setSortAscending, setSearchQuery }: Props) => {
   const [inputValue, setInputValue] = useState('')
 
+  const colorScheme = useColorScheme()
+  const darkMode = colorScheme === 'dark'
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(inputValue)
@@ -19,12 +22,14 @@ const FilterAndSearch = ({ sortAscending, setSortAscending, setSearchQuery }: Pr
     return () => clearTimeout(handler)
   }, [inputValue, setSearchQuery])
 
+  const styles = useMemo(() => createStyles(darkMode), [darkMode])
+
   return (
     <View style={styles.wrapper}>
       <TextInput
         placeholder="Search snippets"
         style={styles.input}
-        placeholderTextColor={'#cccr'}
+        placeholderTextColor={'white'}
         value={inputValue}
         onChangeText={setInputValue}
       />
@@ -33,35 +38,37 @@ const FilterAndSearch = ({ sortAscending, setSortAscending, setSearchQuery }: Pr
         <MaterialCommunityIcons
           name={sortAscending ? 'sort-calendar-ascending' : 'sort-calendar-descending'}
           size={24}
-          color="black"
+          color="#1a1a1a"
         />
       </Pressable>
     </View>
   )
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-  },
-  input: {
-    flex: 1,
-
-    borderRadius: 8,
-    padding: 14,
-    marginRight: 8,
-    color: 'black',
-    backgroundColor: 'white',
-  },
-  button: {
-    padding: 12,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-})
+const createStyles = (darkMode: boolean) =>
+  StyleSheet.create({
+    wrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 8,
+    },
+    input: {
+      flex: 1,
+      borderRadius: 8,
+      padding: 14,
+      marginRight: 8,
+      color: darkMode ? 'white' : '#1a1a1a',
+      backgroundColor: darkMode ? '#1a1a1a' : 'white',
+      borderWidth: 1,
+      borderColor: darkMode ? 'white' : '#1a1a1a',
+    },
+    button: {
+      padding: 12,
+      backgroundColor: 'white',
+      borderRadius: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  })
 
 export default FilterAndSearch

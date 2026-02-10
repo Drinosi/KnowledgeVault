@@ -6,7 +6,10 @@ export default function RootLayout() {
   return (
     <Provider store={store}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="(tabs)"
+          options={{ headerShown: false, headerStyle: { backgroundColor: 'red' } }}
+        />
       </Stack>
     </Provider>
   )

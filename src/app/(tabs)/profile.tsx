@@ -9,7 +9,7 @@ import { clearEntries } from '../../store/slices/entriesSlice'
 
 import Feather from '@expo/vector-icons/Feather'
 
-const Me = () => {
+const profile = () => {
   const [loading, setLoading] = useState(false)
 
   const dispatch: AppDispatch = useDispatch()
@@ -37,7 +37,7 @@ const Me = () => {
   )
 }
 
-export default Me
+export default profile
 
 const styles = StyleSheet.create({
   wrapper: {

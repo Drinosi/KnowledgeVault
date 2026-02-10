@@ -1,6 +1,6 @@
 import 'react-native-get-random-values'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Text, View, FlatList, Image, Pressable, Dimensions, StyleSheet } from 'react-native'
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 import { v4 as uuidv4 } from 'uuid'
@@ -16,9 +16,16 @@ import { addEntry, setEntries } from '../../store/slices/entriesSlice'
 import SnippetCard from '../../components/SnippetCard'
 import FilterAndSearch from '../../components/FilterAndSearch'
 
+import { Appearance, useColorScheme } from 'react-native'
+
 const { width } = Dimensions.get('window')
 
 export default function App() {
+  const colorScheme = useColorScheme()
+  const darkMode = colorScheme === 'dark'
+
+  const styles = useMemo(() => createStyles(darkMode), [darkMode])
+
   const dispatch: AppDispatch = useDispatch()
 
   const [createOpen, setCreateOpen] = useState(false)
@@ -134,67 +141,70 @@ export default function App() {
   )
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-  },
-  grid: {
-    padding: 4,
-    marginBottom: 8,
-  },
-  addSnippet: {
-    height: 60,
-    position: 'absolute',
-    zIndex: 9999,
-    width: 60,
-    left: width * 0.5 - 30,
-    borderRadius: 99,
-    bottom: 20,
-    backgroundColor: '#4D88E9',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  addSnippetText: {
-    color: '#FFFFFF',
-    fontSize: 30,
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  emptyStateWrapper: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    inset: 0,
-  },
-  homeImage: {
-    width: '100%',
-    height: 285,
-  },
-  noSnippetsText: {
-    textAlign: 'center',
-    fontSize: 20,
-    marginBottom: 12,
-    fontWeight: 600,
-  },
-  noSnippetsDescription: {
-    textAlign: 'center',
-    fontSize: 16,
-    color: 'grey',
-    marginBottom: 30,
-  },
-  emptyAddSnippet: {
-    height: 52,
-    width: 300,
-    marginBottom: 8,
-    borderRadius: 9999,
-    backgroundColor: '#4D88E9',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyAddSnippetText: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: '600',
-  },
-})
+const createStyles = (darkMode: boolean) =>
+  StyleSheet.create({
+    wrapper: {
+      flex: 1,
+      backgroundColor: darkMode ? '#1a1a1a' : 'white',
+    },
+    grid: {
+      padding: 4,
+      marginBottom: 8,
+    },
+    addSnippet: {
+      height: 60,
+      position: 'absolute',
+      zIndex: 9999,
+      width: 60,
+      left: width * 0.5 - 30,
+      borderRadius: 99,
+      bottom: 20,
+      backgroundColor: darkMode ? 'white' : '#4D88E9',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    addSnippetText: {
+      color: darkMode ? '#1a1a1a' : 'white',
+      fontSize: 30,
+      marginBottom: 4,
+      textAlign: 'center',
+    },
+    emptyStateWrapper: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      inset: 0,
+    },
+    homeImage: {
+      width: '100%',
+      height: 450,
+    },
+    noSnippetsText: {
+      textAlign: 'center',
+      fontSize: 20,
+      marginBottom: 12,
+      fontWeight: 600,
+      color: darkMode ? 'white' : '#1a1a1a',
+    },
+    noSnippetsDescription: {
+      textAlign: 'center',
+      fontSize: 16,
+      color: darkMode ? 'white' : 'grey',
+      marginBottom: 30,
+    },
+    emptyAddSnippet: {
+      height: 52,
+      width: 300,
+      marginBottom: 8,
+      borderRadius: 9999,
+      backgroundColor: darkMode ? 'white' : '#4D88E9',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    emptyAddSnippetText: {
+      color: darkMode ? '#1a1a1a' : 'white',
+      fontSize: 20,
+      fontWeight: '600',
+    },
+  })
