@@ -2,9 +2,14 @@ import { Tabs } from 'expo-router'
 import { Entypo, FontAwesome6, Ionicons } from '@expo/vector-icons'
 import { useColorScheme } from 'react-native'
 
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
+
 export default function TabLayout() {
-  const colorScheme = useColorScheme()
-  const darkMode = colorScheme === 'dark'
+  const systemScheme = useColorScheme()
+  const themeMode = useSelector((state: RootState) => state.theme.mode)
+  const darkMode = themeMode === 'dark' || (themeMode === 'system' && systemScheme === 'dark')
+
   return (
     <Tabs
       screenOptions={{

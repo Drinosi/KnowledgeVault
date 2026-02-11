@@ -2,6 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { View, TextInput, Pressable, StyleSheet, useColorScheme } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
+import { useSelector } from 'react-redux'
+import { RootState } from '../store'
+
 type Props = {
   sortAscending: boolean
   setSortAscending: (sortAscending: boolean) => void
@@ -11,8 +14,10 @@ type Props = {
 const FilterAndSearch = ({ sortAscending, setSortAscending, setSearchQuery }: Props) => {
   const [inputValue, setInputValue] = useState('')
 
-  const colorScheme = useColorScheme()
-  const darkMode = colorScheme === 'dark'
+  const systemScheme = useColorScheme()
+  const themeMode = useSelector((state: RootState) => state.theme.mode)
+
+  const darkMode = themeMode === 'dark' || (themeMode === 'system' && systemScheme === 'dark')
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -38,7 +43,7 @@ const FilterAndSearch = ({ sortAscending, setSortAscending, setSearchQuery }: Pr
         <MaterialCommunityIcons
           name={sortAscending ? 'sort-calendar-ascending' : 'sort-calendar-descending'}
           size={24}
-          color="#1a1a1a"
+          style={styles.icon}
         />
       </Pressable>
     </View>
@@ -54,7 +59,7 @@ const createStyles = (darkMode: boolean) =>
     },
     input: {
       flex: 1,
-      borderRadius: 8,
+      borderRadius: 12,
       padding: 14,
       marginRight: 8,
       color: darkMode ? 'white' : '#1a1a1a',
@@ -64,10 +69,15 @@ const createStyles = (darkMode: boolean) =>
     },
     button: {
       padding: 12,
-      backgroundColor: 'white',
+      backgroundColor: darkMode ? 'black' : 'white',
       borderRadius: 12,
       justifyContent: 'center',
       alignItems: 'center',
+      borderWidth: 1,
+      borderColor: darkMode ? 'white' : '#1a1a1a',
+    },
+    icon: {
+      color: darkMode ? 'white' : '#1a1a1a',
     },
   })
 

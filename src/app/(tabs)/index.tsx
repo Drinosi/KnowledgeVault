@@ -16,13 +16,15 @@ import { addEntry, setEntries } from '../../store/slices/entriesSlice'
 import SnippetCard from '../../components/SnippetCard'
 import FilterAndSearch from '../../components/FilterAndSearch'
 
-import { Appearance, useColorScheme } from 'react-native'
+import { useColorScheme } from 'react-native'
 
 const { width } = Dimensions.get('window')
 
 export default function App() {
-  const colorScheme = useColorScheme()
-  const darkMode = colorScheme === 'dark'
+  const systemScheme = useColorScheme()
+  const themeMode = useSelector((state: RootState) => state.theme.mode)
+
+  const darkMode = themeMode === 'dark' || (themeMode === 'system' && systemScheme === 'dark')
 
   const styles = useMemo(() => createStyles(darkMode), [darkMode])
 
