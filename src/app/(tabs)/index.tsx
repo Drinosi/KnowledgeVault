@@ -4,8 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { Text, View, FlatList, Image, Pressable, Dimensions, StyleSheet } from 'react-native'
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 import { v4 as uuidv4 } from 'uuid'
-
-import CreateSnippetModal from '../../components/CreateSnippet'
+import { router } from 'expo-router'
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
 
@@ -23,14 +22,11 @@ const { width } = Dimensions.get('window')
 export default function App() {
   const systemScheme = useColorScheme()
   const themeMode = useSelector((state: RootState) => state.theme.mode)
-
   const darkMode = themeMode === 'dark' || (themeMode === 'system' && systemScheme === 'dark')
-
   const styles = useMemo(() => createStyles(darkMode), [darkMode])
 
   const dispatch: AppDispatch = useDispatch()
 
-  const [createOpen, setCreateOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortAscending, setSortAscending] = useState(false)
 
@@ -66,12 +62,17 @@ export default function App() {
     setFilteredEntries(data)
   }, [entries, searchQuery, sortAscending])
 
-  const handleCreate = async (entryData: Omit<Entry, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleCreate = async () => {
     const now = Date.now()
+
     const newEntry: Entry = {
       id: uuidv4(),
+      title: '',
+      content: '',
+      type: 'snippet',
+      language: '',
+      sourceUrl: '',
       createdAt: now,
-      ...entryData,
       updatedAt: null,
     }
 
@@ -79,7 +80,7 @@ export default function App() {
 
     dispatch(addEntry(newEntry))
 
-    setCreateOpen(false)
+    router.push(`/${newEntry.id}`)
   }
 
   return (
@@ -99,7 +100,7 @@ export default function App() {
             renderItem={({ item }) => <SnippetCard item={item} />}
           />
           <Pressable
-            onPress={() => setCreateOpen(true)}
+            onPress={handleCreate}
             style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1 }, styles.addSnippet]}
           >
             <Text style={styles.addSnippetText}>+</Text>
@@ -117,7 +118,7 @@ export default function App() {
               <Text style={styles.noSnippetsDescription}>Get started by adding a new snippet</Text>
 
               <Pressable
-                onPress={() => setCreateOpen(true)}
+                onPress={handleCreate}
                 style={({ pressed }) => [
                   {
                     opacity: pressed ? 0.85 : 1,
@@ -131,14 +132,6 @@ export default function App() {
           </SafeAreaView>
         </SafeAreaProvider>
       )}
-
-      <View style={{ display: `${createOpen ? 'flex' : 'none'}` }}>
-        <CreateSnippetModal
-          visible={createOpen}
-          setVisible={setCreateOpen}
-          onSubmit={handleCreate}
-        />
-      </View>
     </View>
   )
 }

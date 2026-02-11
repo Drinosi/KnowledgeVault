@@ -3,16 +3,18 @@ import { useMemo } from 'react'
 import { View, Text, StyleSheet, useColorScheme } from 'react-native'
 import { Link } from 'expo-router'
 import { Entry } from '../domain/Entry'
-
+import { useSelector } from 'react-redux'
+import { RootState } from '../store'
 type SnippetCardProps = {
   item: Entry
 }
 
 const SnippetCard = ({ item }: SnippetCardProps) => {
   let snippetTypeColor
-  const colorScheme = useColorScheme()
-  const darkMode = colorScheme === 'dark'
 
+  const systemScheme = useColorScheme()
+  const themeMode = useSelector((state: RootState) => state.theme.mode)
+  const darkMode = themeMode === 'dark' || (themeMode === 'system' && systemScheme === 'dark')
   const styles = useMemo(() => createStyles(darkMode), [darkMode])
 
   switch (item.type) {
@@ -30,13 +32,7 @@ const SnippetCard = ({ item }: SnippetCardProps) => {
   }
 
   return (
-    <Link
-      style={styles.card}
-      href={{
-        pathname: '[snippet]/SnippetDetails',
-        params: { snippet: item.id },
-      }}
-    >
+    <Link style={styles.card} href={`/${item.id}`}>
       <View style={styles.content}>
         <Text style={styles.title}>{item.title}</Text>
 
