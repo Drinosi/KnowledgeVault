@@ -1,19 +1,17 @@
 import { useMemo } from 'react'
 
-import { View, Text, StyleSheet, useColorScheme } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { Link } from 'expo-router'
 import { Entry } from '../domain/Entry'
-import { useSelector } from 'react-redux'
-import { RootState } from '../store'
+
+import useIsDarkMode from '../hooks/useIsDarkMode'
 
 type SnippetCardProps = {
   item: Entry
 }
 
 const SnippetCard = ({ item }: SnippetCardProps) => {
-  const systemScheme = useColorScheme()
-  const themeMode = useSelector((state: RootState) => state.theme.mode)
-  const darkMode = themeMode === 'dark' || (themeMode === 'system' && systemScheme === 'dark')
+  const { darkMode } = useIsDarkMode()
   const styles = useMemo(() => createStyles(darkMode), [darkMode])
 
   return (

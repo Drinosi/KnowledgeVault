@@ -1,14 +1,6 @@
 import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { useEffect, useState } from 'react'
-import {
-  View,
-  Text,
-  Pressable,
-  TextInput,
-  ScrollView,
-  StyleSheet,
-  useColorScheme,
-} from 'react-native'
+import { View, Text, Pressable, TextInput, ScrollView, StyleSheet } from 'react-native'
 
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
@@ -19,8 +11,7 @@ import { AppDispatch } from '../../store'
 import { useDispatch } from 'react-redux'
 import { updateEntry } from '../../store/slices/entriesSlice'
 
-import { useSelector } from 'react-redux'
-import { RootState } from '../../store'
+import useIsDarkMode from '../../hooks/useIsDarkMode'
 
 export default function SnippetDetails() {
   const [data, setData] = useState<Entry>()
@@ -34,10 +25,7 @@ export default function SnippetDetails() {
   const [language, setLanguage] = useState('')
   const [content, setContent] = useState('')
 
-  const systemScheme = useColorScheme()
-  const themeMode = useSelector((state: RootState) => state.theme.mode)
-
-  const darkMode = themeMode === 'dark' || (themeMode === 'system' && systemScheme === 'dark')
+  const { darkMode } = useIsDarkMode()
   const styles = createStyles(darkMode)
 
   useEffect(() => {

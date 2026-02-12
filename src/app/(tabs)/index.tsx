@@ -15,15 +15,13 @@ import { addEntry, setEntries } from '../../store/slices/entriesSlice'
 import SnippetCard from '../../components/SnippetCard'
 import FilterAndSearch from '../../components/FilterAndSearch'
 
-import { useColorScheme } from 'react-native'
 import { runMigrations } from '../../db/migrations'
+import useIsDarkMode from '../../hooks/useIsDarkMode'
 
 const { width } = Dimensions.get('window')
 
 export default function App() {
-  const systemScheme = useColorScheme()
-  const themeMode = useSelector((state: RootState) => state.theme.mode)
-  const darkMode = themeMode === 'dark' || (themeMode === 'system' && systemScheme === 'dark')
+  const { darkMode } = useIsDarkMode()
   const styles = useMemo(() => createStyles(darkMode), [darkMode])
 
   const dispatch: AppDispatch = useDispatch()

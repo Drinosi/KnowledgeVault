@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { View, TextInput, Pressable, StyleSheet, useColorScheme } from 'react-native'
+import { View, TextInput, Pressable, StyleSheet } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
-import { useSelector } from 'react-redux'
-import { RootState } from '../store'
+import useIsDarkMode from '../hooks/useIsDarkMode'
 
 type Props = {
   sortAscending: boolean
@@ -14,10 +13,7 @@ type Props = {
 const FilterAndSearch = ({ sortAscending, setSortAscending, setSearchQuery }: Props) => {
   const [inputValue, setInputValue] = useState('')
 
-  const systemScheme = useColorScheme()
-  const themeMode = useSelector((state: RootState) => state.theme.mode)
-
-  const darkMode = themeMode === 'dark' || (themeMode === 'system' && systemScheme === 'dark')
+  const { darkMode } = useIsDarkMode()
 
   useEffect(() => {
     const handler = setTimeout(() => {
