@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams, useNavigation } from 'expo-router'
+import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { useEffect, useState } from 'react'
 import {
   View,
@@ -31,15 +31,13 @@ export default function SnippetDetails() {
   const dispatch: AppDispatch = useDispatch()
   const navigation = useNavigation()
 
+  const [language, setLanguage] = useState('')
+  const [content, setContent] = useState('')
+
   const systemScheme = useColorScheme()
   const themeMode = useSelector((state: RootState) => state.theme.mode)
+
   const darkMode = themeMode === 'dark' || (themeMode === 'system' && systemScheme === 'dark')
-
-  const [content, setContent] = useState('')
-  const [type, setType] = useState<'snippet' | 'concept' | 'link'>('snippet')
-  const [language, setLanguage] = useState('')
-  const [sourceUrl, setSourceUrl] = useState('')
-
   const styles = createStyles(darkMode)
 
   useEffect(() => {
@@ -50,18 +48,23 @@ export default function SnippetDetails() {
   }, [data])
 
   useEffect(() => {
+    navigation.setOptions({ title: data?.title || 'Untitled' })
+  }, [data?.title])
+
+  useEffect(() => {
     ;(async () => {
       const response = await EntryRepository.getById(params.snippet as string)
 
       if (response) {
         setData(response)
-        setContent(
-          response.content && response.title ? response.title + '\n' + response.content : '',
-        )
-
-        setType(response.type)
+        if (response.title && !response.content) {
+          setContent(response.title)
+        } else {
+          setContent(
+            response.content && response.title ? response.title + '\n' + response.content : '',
+          )
+        }
         setLanguage(response.language ?? '')
-        setSourceUrl(response.sourceUrl ?? '')
       }
     })()
   }, [])
@@ -108,7 +111,7 @@ export default function SnippetDetails() {
     })
 
     return unsubscribe
-  }, [content, type, language, sourceUrl, data])
+  }, [content, language, data])
 
   if (!data) {
     return (
@@ -120,19 +123,6 @@ export default function SnippetDetails() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: data?.title ?? 'Loading...',
-          headerBackVisible: false,
-          headerStyle: {
-            backgroundColor: darkMode ? '#1a1a1a' : 'white',
-          },
-          headerTitleStyle: {
-            color: darkMode ? 'white' : 'black',
-          },
-        }}
-      />
-
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Text style={styles.dateText}>
@@ -161,7 +151,20 @@ export default function SnippetDetails() {
           {isPreview ? (
             <Pressable onPress={() => setIsPreview(false)}>
               <View style={styles.contentContainer}>
-                <Markdown style={styles}>{data.content}</Markdown>
+                <View>
+                  {data.title && (
+                    <Text
+                      style={{
+                        fontSize: 32,
+                        color: darkMode ? 'white' : '#1a1a1a',
+                        marginBottom: 10,
+                      }}
+                    >
+                      {data.title}
+                    </Text>
+                  )}
+                  <Markdown style={styles}>{data.content}</Markdown>
+                </View>
               </View>
             </Pressable>
           ) : (
@@ -212,36 +215,36 @@ const createStyles = (darkMode: boolean) =>
       marginTop: 20,
       height: '100%',
       textAlignVertical: 'top',
-      color: darkMode ? 'white' : 'black',
+      color: darkMode ? 'white' : '#1a1a1a',
     },
     errorContainer: {
       padding: 20,
     },
     heading1: {
-      color: darkMode ? 'white' : 'black',
+      color: darkMode ? 'white' : '#1a1a1a',
     },
     heading2: {
-      color: darkMode ? 'white' : 'black',
+      color: darkMode ? 'white' : '#1a1a1a',
     },
     heading3: {
-      color: darkMode ? 'white' : 'black',
+      color: darkMode ? 'white' : '#1a1a1a',
     },
     heading5: {
-      color: darkMode ? 'white' : 'black',
+      color: darkMode ? 'white' : '#1a1a1a',
     },
     heading6: {
-      color: darkMode ? 'white' : 'black',
+      color: darkMode ? 'white' : '#1a1a1a',
     },
     paragraph: {
-      color: darkMode ? 'white' : 'black',
+      color: darkMode ? 'white' : '#1a1a1a',
     },
     bullet_list: {
-      color: darkMode ? 'white' : 'black',
+      color: darkMode ? 'white' : '#1a1a1a',
     },
     order_list: {
-      color: darkMode ? 'white' : 'black',
+      color: darkMode ? 'white' : '#1a1a1a',
     },
     hr: {
-      color: darkMode ? 'white' : 'black',
+      color: darkMode ? 'white' : '#1a1a1a',
     },
   })

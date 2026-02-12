@@ -5,14 +5,10 @@ CREATE TABLE IF NOT EXISTS entries (
   id TEXT PRIMARY KEY NOT NULL,
   title TEXT NOT NULL,
   content TEXT NOT NULL,
-  type TEXT NOT NULL CHECK(type IN ('snippet', 'concept', 'link')),
   language TEXT,
-  source_url TEXT,
   created_at INTEGER NOT NULL,
   updated_at INTEGER
 );
-
-
 
 CREATE TABLE IF NOT EXISTS tags (
   id TEXT PRIMARY KEY NOT NULL,

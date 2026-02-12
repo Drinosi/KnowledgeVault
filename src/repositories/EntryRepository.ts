@@ -5,9 +5,7 @@ type DBEntryRow = {
   id: string
   title: string
   content: string
-  type: string
   language: string | null
-  source_url: string | null
   created_at: number
   updated_at: number | null
 }
@@ -19,15 +17,13 @@ export const EntryRepository = {
     await db.runAsync(
       `
       INSERT OR REPLACE INTO entries
-      (id, title, content, type, language, source_url, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      (id, title, content, language, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?)
       `,
       entry.id,
       entry.title,
       entry.content,
-      entry.type,
       entry.language ?? null,
-      entry.sourceUrl ?? null,
       entry.createdAt,
       entry.updatedAt ?? null,
     )
@@ -41,9 +37,7 @@ export const EntryRepository = {
         id,
         title,
         substr(content, 1, 200) as content,
-        type,
         language,
-        source_url,
         created_at,
         updated_at
        FROM entries
@@ -56,9 +50,7 @@ export const EntryRepository = {
       id: row.id,
       title: row.title,
       content: row.content,
-      type: row.type as Entry['type'],
       language: row.language,
-      sourceUrl: row.source_url,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     }))
@@ -78,9 +70,7 @@ export const EntryRepository = {
       id: row.id,
       title: row.title,
       content: row.content,
-      type: row.type as Entry['type'],
       language: row.language,
-      sourceUrl: row.source_url,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     }
@@ -102,9 +92,7 @@ export const EntryRepository = {
     const columnMap: Record<string, string> = {
       title: 'title',
       content: 'content',
-      type: 'type',
       language: 'language',
-      sourceUrl: 'source_url',
     }
 
     const fields: string[] = []
@@ -141,9 +129,7 @@ export const EntryRepository = {
       id,
       title,
       substr(content, 1, 200) as content,
-      type,
       language,
-      source_url,
       created_at,
       updated_at
     FROM entries
@@ -157,9 +143,7 @@ export const EntryRepository = {
       id: row.id,
       title: row.title,
       content: row.content,
-      type: row.type as Entry['type'],
       language: row.language,
-      sourceUrl: row.source_url,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     }))

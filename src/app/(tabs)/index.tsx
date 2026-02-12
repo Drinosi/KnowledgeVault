@@ -16,6 +16,7 @@ import SnippetCard from '../../components/SnippetCard'
 import FilterAndSearch from '../../components/FilterAndSearch'
 
 import { useColorScheme } from 'react-native'
+import { runMigrations } from '../../db/migrations'
 
 const { width } = Dimensions.get('window')
 
@@ -35,6 +36,7 @@ export default function App() {
 
   useEffect(() => {
     ;(async () => {
+      await runMigrations()
       const results = await EntryRepository.getAll(100, 0, sortType)
 
       dispatch(setEntries(results))
@@ -69,9 +71,7 @@ export default function App() {
       id: uuidv4(),
       title: '',
       content: '',
-      type: 'snippet',
       language: '',
-      sourceUrl: '',
       createdAt: now,
       updatedAt: null,
     }
@@ -80,7 +80,7 @@ export default function App() {
 
     dispatch(addEntry(newEntry))
 
-    router.push(`/${newEntry.id}`)
+    router.push(`/snippets/${newEntry.id}`)
   }
 
   return (

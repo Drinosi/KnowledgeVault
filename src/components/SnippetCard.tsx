@@ -5,45 +5,26 @@ import { Link } from 'expo-router'
 import { Entry } from '../domain/Entry'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
+
 type SnippetCardProps = {
   item: Entry
 }
 
 const SnippetCard = ({ item }: SnippetCardProps) => {
-  let snippetTypeColor
-
   const systemScheme = useColorScheme()
   const themeMode = useSelector((state: RootState) => state.theme.mode)
   const darkMode = themeMode === 'dark' || (themeMode === 'system' && systemScheme === 'dark')
   const styles = useMemo(() => createStyles(darkMode), [darkMode])
 
-  switch (item.type) {
-    case 'snippet':
-      snippetTypeColor = '#618ae2'
-      break
-    case 'link':
-      snippetTypeColor = '#9866D3'
-      break
-    case 'concept':
-      snippetTypeColor = '#e3aa49'
-      break
-    default:
-      snippetTypeColor = '#E8F1FF'
-  }
-
   return (
-    <Link style={styles.card} href={`/${item.id}`}>
+    <Link style={styles.card} href={`/snippets/${item.id}`}>
       <View style={styles.content}>
         <Text style={styles.title}>{item.title}</Text>
-
-        <Text style={[styles.typeBadge, { backgroundColor: snippetTypeColor }]}>{item.type}</Text>
-
         <Text style={styles.description}>{item.content}</Text>
 
         <Text style={styles.date}>
           Created on {new Date(Number(item.createdAt)).toDateString()}
         </Text>
-
         <Text style={styles.date}>
           {item.updatedAt && `Last updated on ${new Date(Number(item.updatedAt)).toDateString()}`}
         </Text>
@@ -57,19 +38,17 @@ export default SnippetCard
 const createStyles = (darkMode: boolean) =>
   StyleSheet.create({
     card: {
-      flex: 1,
       margin: 6,
       maxHeight: 200,
-      overflow: 'hidden',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.05,
-      shadowRadius: 3.84,
       backgroundColor: darkMode ? '#1a1a1a' : 'white',
-      elevation: 5,
-      borderWidth: 1,
+      borderWidth: darkMode ? 1 : 0,
       borderColor: darkMode ? 'white' : '#1a1a1a',
       borderRadius: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 4,
     },
 
     content: {
@@ -79,29 +58,18 @@ const createStyles = (darkMode: boolean) =>
 
     title: {
       color: darkMode ? 'white' : '#1a1a1a',
-      fontSize: 30,
-      marginBottom: 12,
-    },
-
-    typeBadge: {
-      color: 'white',
-      fontSize: 12,
-      borderRadius: 12,
-      marginBottom: 8,
-      paddingHorizontal: 10,
-      paddingVertical: 4,
-      alignSelf: 'flex-start',
+      fontSize: 20,
+      marginBottom: 4,
     },
 
     description: {
-      color: darkMode ? 'white' : '#777C8E',
+      color: darkMode ? 'white' : '#676c7c',
       fontSize: 14,
       marginBottom: 8,
     },
 
     date: {
-      color: darkMode ? 'white' : '#C2C7D4',
-      fontSize: 14,
-      marginBottom: 4,
+      color: darkMode ? 'white' : '#b6b6b6',
+      fontSize: 12,
     },
   })

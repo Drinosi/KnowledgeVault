@@ -8,10 +8,8 @@ export default function RootLayout() {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Stack>
-          <Stack.Screen
-            name="(tabs)"
-            options={{ headerShown: false, headerStyle: { backgroundColor: 'red' } }}
-          />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="snippets" options={{ headerShown: false }} />
         </Stack>
       </PersistGate>
     </Provider>
