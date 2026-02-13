@@ -41,7 +41,7 @@ const SnippetCard = ({ item }: SnippetCardProps) => {
         {item.updatedAt && (
           <Text style={styles.date}>
             {/* {displayDate + ' ' + !item?.content && 'No additional text'} */}
-            {`${displayDate} ${item.content ? null : ' No additonal text'}`}
+            {`${displayDate} ${item.content ? '' : ' No additonal text'}`}
           </Text>
         )}
       </View>

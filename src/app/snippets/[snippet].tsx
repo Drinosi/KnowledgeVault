@@ -55,14 +55,6 @@ export default function SnippetDetails() {
     })()
   }, [])
 
-  if (!data) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text>There was a problem showing this Entry</Text>
-      </View>
-    )
-  }
-
   const hasChanges = () => {
     if (!data) return false
 
@@ -98,12 +90,22 @@ export default function SnippetDetails() {
   }
 
   useEffect(() => {
-    const subscription = Keyboard.addListener('keyboardDidHide', () => {
-      saveChanges()
+    const unsubscribe = navigation.addListener('beforeRemove', async () => {
+      if (hasChanges()) {
+        await saveChanges()
+      }
     })
 
-    return () => subscription.remove()
-  }, [])
+    return unsubscribe
+  }, [content, data])
+
+  if (!data) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text>There was a problem showing this Entry</Text>
+      </View>
+    )
+  }
 
   return (
     <>
