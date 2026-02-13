@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { View, Text, Pressable, TextInput, ScrollView, StyleSheet } from 'react-native'
+import { Keyboard, View, Text, Pressable, TextInput, ScrollView, StyleSheet } from 'react-native'
 
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
@@ -22,7 +22,6 @@ export default function SnippetDetails() {
   const dispatch: AppDispatch = useDispatch()
   const navigation = useNavigation()
 
-  const [language, setLanguage] = useState('')
   const [content, setContent] = useState('')
 
   const { darkMode } = useIsDarkMode()
@@ -52,10 +51,17 @@ export default function SnippetDetails() {
             response.content && response.title ? response.title + '\n' + response.content : '',
           )
         }
-        setLanguage(response.language ?? '')
       }
     })()
   }, [])
+
+  if (!data) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text>There was a problem showing this Entry</Text>
+      </View>
+    )
+  }
 
   const hasChanges = () => {
     if (!data) return false
@@ -92,22 +98,12 @@ export default function SnippetDetails() {
   }
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', async () => {
-      if (hasChanges()) {
-        await saveChanges()
-      }
+    const subscription = Keyboard.addListener('keyboardDidHide', () => {
+      saveChanges()
     })
 
-    return unsubscribe
-  }, [content, language, data])
-
-  if (!data) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text>There was a problem showing this Entry</Text>
-      </View>
-    )
-  }
+    return () => subscription.remove()
+  }, [])
 
   return (
     <>
@@ -140,17 +136,7 @@ export default function SnippetDetails() {
             <Pressable onPress={() => setIsPreview(false)}>
               <View style={styles.contentContainer}>
                 <View>
-                  {data.title && (
-                    <Text
-                      style={{
-                        fontSize: 32,
-                        color: darkMode ? 'white' : '#1a1a1a',
-                        marginBottom: 10,
-                      }}
-                    >
-                      {data.title}
-                    </Text>
-                  )}
+                  {data.title && <Markdown style={styles}>{data.title}</Markdown>}
                   <Markdown style={styles}>{data.content}</Markdown>
                 </View>
               </View>

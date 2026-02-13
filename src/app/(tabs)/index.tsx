@@ -3,8 +3,12 @@ import 'react-native-get-random-values'
 import { useEffect, useState, useMemo } from 'react'
 import { Text, View, FlatList, Image, Pressable, Dimensions, StyleSheet } from 'react-native'
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
+
 import { v4 as uuidv4 } from 'uuid'
+
 import { router } from 'expo-router'
+
+import { runMigrations } from '../../db/migrations'
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
 
@@ -15,7 +19,6 @@ import { addEntry, setEntries } from '../../store/slices/entriesSlice'
 import SnippetCard from '../../components/SnippetCard'
 import FilterAndSearch from '../../components/FilterAndSearch'
 
-import { runMigrations } from '../../db/migrations'
 import useIsDarkMode from '../../hooks/useIsDarkMode'
 
 const { width } = Dimensions.get('window')

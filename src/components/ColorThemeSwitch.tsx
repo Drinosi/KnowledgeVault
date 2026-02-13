@@ -1,5 +1,7 @@
 import { View, StyleSheet } from 'react-native'
+
 import { Picker } from '@react-native-picker/picker'
+
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../store'
 import { setThemeMode } from '../store/slices/colorThemeSlice'

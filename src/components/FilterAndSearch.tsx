@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { View, TextInput, Pressable, StyleSheet } from 'react-native'
+
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 import useIsDarkMode from '../hooks/useIsDarkMode'
@@ -30,7 +31,7 @@ const FilterAndSearch = ({ sortAscending, setSortAscending, setSearchQuery }: Pr
       <TextInput
         placeholder="Search snippets"
         style={styles.input}
-        placeholderTextColor={'white'}
+        placeholderTextColor={darkMode ? 'white' : '#1a1a1a'}
         value={inputValue}
         onChangeText={setInputValue}
       />
@@ -55,22 +56,18 @@ const createStyles = (darkMode: boolean) =>
     },
     input: {
       flex: 1,
-      borderRadius: 12,
       padding: 14,
       marginRight: 8,
       color: darkMode ? 'white' : '#1a1a1a',
       backgroundColor: darkMode ? '#1a1a1a' : 'white',
-      borderWidth: 1,
-      borderColor: darkMode ? 'white' : '#1a1a1a',
+      borderBottomWidth: 1,
+      borderColor: darkMode ? 'white' : 'lightgrey',
     },
     button: {
       padding: 12,
-      backgroundColor: darkMode ? 'black' : 'white',
-      borderRadius: 12,
+      backgroundColor: darkMode ? '#1a1a1a' : 'white',
       justifyContent: 'center',
       alignItems: 'center',
-      borderWidth: 1,
-      borderColor: darkMode ? 'white' : '#1a1a1a',
     },
     icon: {
       color: darkMode ? 'white' : '#1a1a1a',

@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 
 import { View, Text, StyleSheet } from 'react-native'
 import { Link } from 'expo-router'
+
 import { Entry } from '../domain/Entry'
 
 import useIsDarkMode from '../hooks/useIsDarkMode'
@@ -14,18 +15,35 @@ const SnippetCard = ({ item }: SnippetCardProps) => {
   const { darkMode } = useIsDarkMode()
   const styles = useMemo(() => createStyles(darkMode), [darkMode])
 
+  let displayDate = ''
+  if (item.updatedAt) {
+    const date = new Date(Number(item.updatedAt))
+    const now = new Date()
+    const diff = now.getTime() - date.getTime()
+    const oneWeek = 7 * 24 * 60 * 60 * 1000
+
+    if (diff < oneWeek) {
+      const day = date.toLocaleDateString(undefined, { weekday: 'long' })
+      const time = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+      displayDate = `${day} ${time}`
+    } else {
+      const day = date.getDate().toString().padStart(2, '0')
+      const month = (date.getMonth() + 1).toString().padStart(2, '0')
+      const year = date.getFullYear().toString().slice(-2)
+      displayDate = `${day}.${month}.${year}`
+    }
+  }
+
   return (
     <Link style={styles.card} href={`/snippets/${item.id}`}>
       <View style={styles.content}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description}>{item.content}</Text>
-
-        <Text style={styles.date}>
-          Created on {new Date(Number(item.createdAt)).toDateString()}
-        </Text>
-        <Text style={styles.date}>
-          {item.updatedAt && `Last updated on ${new Date(Number(item.updatedAt)).toDateString()}`}
-        </Text>
+        <Text style={styles.title}>{item.title.length ? item.title : 'Untitled'}</Text>
+        {item.updatedAt && (
+          <Text style={styles.date}>
+            {/* {displayDate + ' ' + !item?.content && 'No additional text'} */}
+            {`${displayDate} ${item.content ? null : ' No additonal text'}`}
+          </Text>
+        )}
       </View>
     </Link>
   )
@@ -39,14 +57,10 @@ const createStyles = (darkMode: boolean) =>
       margin: 6,
       maxHeight: 200,
       backgroundColor: darkMode ? '#1a1a1a' : 'white',
-      borderWidth: darkMode ? 1 : 0,
+      borderBottomWidth: 1,
       borderColor: darkMode ? 'white' : '#1a1a1a',
       borderRadius: 12,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 4,
+      borderBottomColor: 'lightgrey',
     },
 
     content: {

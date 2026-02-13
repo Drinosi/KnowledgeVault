@@ -36,7 +36,7 @@ export const EntryRepository = {
       `SELECT 
         id,
         title,
-        substr(content, 1, 200) as content,
+        substr(content, 1, 100) as content,
         language,
         created_at,
         updated_at
