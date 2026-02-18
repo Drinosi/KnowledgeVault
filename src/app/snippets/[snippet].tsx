@@ -59,7 +59,8 @@ export default function SnippetDetails() {
     if (!data) return false
 
     const combinedOriginal = data.title + '\n' + data.content
-    return combinedOriginal !== content
+
+    if (combinedOriginal.length && content.length) return combinedOriginal !== content
   }
 
   async function saveChanges() {
@@ -68,7 +69,7 @@ export default function SnippetDetails() {
     const entryId = Array.isArray(params.snippet) ? params.snippet[0] : params.snippet
 
     const lines = content.split('\n')
-    const newTitle = lines[0] || 'Untitled'
+    const newTitle = lines[0]
     const newContent = lines.slice(1).join('\n')
 
     const changes: Partial<Entry> = {

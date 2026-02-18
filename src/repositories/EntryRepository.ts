@@ -29,7 +29,7 @@ export const EntryRepository = {
     )
   },
 
-  async getAll(limit: number, offset: number, order: 'ASC' | 'DESC'): Promise<Entry[]> {
+  async getAll(limit: number, offset: number): Promise<Entry[]> {
     const db = await openDB()
 
     const rows: DBEntryRow[] = await db.getAllAsync(
@@ -41,7 +41,6 @@ export const EntryRepository = {
         created_at,
         updated_at
        FROM entries
-       ORDER BY COALESCE(updated_at, created_at) ${order}
        LIMIT ? OFFSET ?`,
       [limit, offset],
     )

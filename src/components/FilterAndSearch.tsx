@@ -1,17 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { View, TextInput, Pressable, StyleSheet } from 'react-native'
-
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { View, TextInput, StyleSheet } from 'react-native'
 
 import useIsDarkMode from '../hooks/useIsDarkMode'
 
 type Props = {
-  sortAscending: boolean
-  setSortAscending: (sortAscending: boolean) => void
   setSearchQuery: (query: string) => void
 }
 
-const FilterAndSearch = ({ sortAscending, setSortAscending, setSearchQuery }: Props) => {
+const FilterAndSearch = ({ setSearchQuery }: Props) => {
   const [inputValue, setInputValue] = useState('')
 
   const { darkMode } = useIsDarkMode()
@@ -35,14 +31,6 @@ const FilterAndSearch = ({ sortAscending, setSortAscending, setSearchQuery }: Pr
         value={inputValue}
         onChangeText={setInputValue}
       />
-
-      <Pressable style={styles.button} onPress={() => setSortAscending(!sortAscending)}>
-        <MaterialCommunityIcons
-          name={sortAscending ? 'sort-calendar-ascending' : 'sort-calendar-descending'}
-          size={24}
-          style={styles.icon}
-        />
-      </Pressable>
     </View>
   )
 }
@@ -52,25 +40,17 @@ const createStyles = (darkMode: boolean) =>
     wrapper: {
       flexDirection: 'row',
       alignItems: 'center',
-      padding: 8,
+      paddingVertical: 8,
+      flex: 1,
     },
     input: {
-      flex: 1,
-      padding: 14,
-      marginRight: 8,
+      paddingVertical: 20,
+      paddingHorizontal: 30,
       color: darkMode ? 'white' : '#1a1a1a',
-      backgroundColor: darkMode ? '#1a1a1a' : 'white',
-      borderBottomWidth: 1,
       borderColor: darkMode ? 'white' : 'lightgrey',
-    },
-    button: {
-      padding: 12,
-      backgroundColor: darkMode ? '#1a1a1a' : 'white',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    icon: {
-      color: darkMode ? 'white' : '#1a1a1a',
+      backgroundColor: darkMode ? '#1a1a1a' : '#f3f3f7',
+      borderRadius: 12,
+      flex: 1,
     },
   })
 
