@@ -66,19 +66,19 @@ const createStyles = (darkMode: boolean, index: number, length: number) =>
     },
 
     title: {
-      color: darkMode ? 'white' : '#1a1a1a',
-      fontSize: 20,
+      color: darkMode ? '#a2a6b1' : '#1a1a1a',
+      fontSize: 18,
       marginBottom: 4,
     },
 
     description: {
-      color: darkMode ? 'white' : '#676c7c',
-      fontSize: 14,
-      marginBottom: 8,
+      color: darkMode ? '#a2a6b1' : '#676c7c',
+      fontSize: 12,
+      marginBottom: 4,
     },
 
     date: {
-      color: darkMode ? 'white' : '#b6b6b6',
-      fontSize: 12,
+      color: darkMode ? '#a2a6b1' : '#b6b6b6',
+      fontSize: 10,
     },
   })

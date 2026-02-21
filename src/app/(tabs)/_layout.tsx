@@ -1,7 +1,10 @@
 import { Tabs } from 'expo-router'
 import { Entypo, FontAwesome6, Ionicons } from '@expo/vector-icons'
 
+import { View, Text } from 'react-native'
+
 import useIsDarkMode from '../../hooks/useIsDarkMode'
+import CreateEntry from '../../components/CreateEntry'
 
 export default function TabLayout() {
   const { darkMode } = useIsDarkMode()
@@ -26,8 +29,27 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
           tabBarIcon: ({ color }) => <Entypo name="home" size={26} color={color} />,
+          header: () => (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                backgroundColor: '#1a1a1a',
+                paddingTop: 60,
+                paddingHorizontal: 16,
+                paddingBottom: 20,
+              }}
+            >
+              <Text
+                style={{ color: 'white', fontSize: 25, fontWeight: '500', marginVertical: 'auto' }}
+              >
+                Snippets
+              </Text>
+              <CreateEntry />
+            </View>
+          ),
         }}
       />
       <Tabs.Screen

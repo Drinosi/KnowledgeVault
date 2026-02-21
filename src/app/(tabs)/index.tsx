@@ -1,12 +1,5 @@
-import 'react-native-get-random-values'
-
 import { useEffect, useState, useMemo } from 'react'
-import { Text, View, SectionList, Image, Pressable, StyleSheet, ScrollView } from 'react-native'
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
-
-import { v4 as uuidv4 } from 'uuid'
-
-import { router } from 'expo-router'
+import { Text, View, SectionList, StyleSheet, ScrollView } from 'react-native'
 
 import { runMigrations } from '../../db/migrations'
 import { EntryRepository } from '../../repositories/EntryRepository'
@@ -14,12 +7,14 @@ import { Entry } from '../../domain/Entry'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '../../store'
-import { addEntry, setEntries } from '../../store/slices/entriesSlice'
+import { setEntries } from '../../store/slices/entriesSlice'
 
 import SnippetCard from '../../components/SnippetCard'
 import FilterAndSearch from '../../components/FilterAndSearch'
 
 import useIsDarkMode from '../../hooks/useIsDarkMode'
+
+import EmptyStateHome from '../../components/EmptyStateHome'
 
 export default function App() {
   const { darkMode } = useIsDarkMode()
@@ -102,31 +97,12 @@ export default function App() {
     setFilteredEntries(data)
   }, [entries, searchQuery])
 
-  const handleCreate = async () => {
-    const now = Date.now()
-
-    const newEntry: Entry = {
-      id: uuidv4(),
-      title: '',
-      content: '',
-      language: '',
-      createdAt: now,
-      updatedAt: null,
-    }
-
-    await EntryRepository.create(newEntry)
-
-    dispatch(addEntry(newEntry))
-
-    router.push(`/snippets/${newEntry.id}`)
-  }
-
   return (
     <ScrollView style={styles.wrapper}>
       {entries.length ? (
         <>
-          <Text style={{ color: 'black', fontSize: 35, fontWeight: 600 }}>
-            {entries.length} notes
+          <Text style={{ color: darkMode ? '#a2a6b1' : 'black', fontSize: 24, fontWeight: 600 }}>
+            {entries.length} snippets
           </Text>
           <View
             style={{
@@ -137,13 +113,6 @@ export default function App() {
             }}
           >
             <FilterAndSearch setSearchQuery={setSearchQuery} />
-
-            <Pressable
-              onPress={handleCreate}
-              style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1 }, styles.addSnippet]}
-            >
-              <Text style={styles.addSnippetText}>+</Text>
-            </Pressable>
           </View>
           <SectionList
             sections={sections}
@@ -153,11 +122,11 @@ export default function App() {
               <>
                 <Text
                   style={{
-                    color: darkMode ? 'white' : '#1a1a1a',
-                    fontSize: 28,
+                    color: darkMode ? '#a2a6b1' : '#1a1a1a',
+                    fontSize: 20,
                     fontWeight: 500,
-                    marginBottom: 12,
-                    marginTop: 24,
+                    marginBottom: 6,
+                    marginTop: 12,
                   }}
                 >
                   {section.title}
@@ -179,30 +148,7 @@ export default function App() {
           />
         </>
       ) : (
-        <SafeAreaProvider>
-          <SafeAreaView style={styles.emptyStateWrapper}>
-            <Image
-              style={styles.homeImage}
-              source={require('../../assets/images/home_background.png')}
-            />
-            <View>
-              <Text style={styles.noSnippetsText}>No Snippets Yet</Text>
-              <Text style={styles.noSnippetsDescription}>Get started by adding a new snippet</Text>
-
-              <Pressable
-                onPress={handleCreate}
-                style={({ pressed }) => [
-                  {
-                    opacity: pressed ? 0.85 : 1,
-                  },
-                  styles.emptyAddSnippet,
-                ]}
-              >
-                <Text style={styles.emptyAddSnippetText}>+ Add entry</Text>
-              </Pressable>
-            </View>
-          </SafeAreaView>
-        </SafeAreaProvider>
+        <EmptyStateHome darkMode={darkMode} />
       )}
     </ScrollView>
   )
@@ -227,53 +173,16 @@ const createStyles = (darkMode: boolean) =>
       justifyContent: 'center',
     },
     addSnippetText: {
-      color: darkMode ? '#1a1a1a' : 'white',
+      color: darkMode ? '#1a1a1a' : '#a2a6b1',
       fontSize: 30,
       marginBottom: 4,
       textAlign: 'center',
     },
-    emptyStateWrapper: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      position: 'absolute',
-      inset: 0,
-    },
-    homeImage: {
-      width: '100%',
-      height: 450,
-    },
-    noSnippetsText: {
-      textAlign: 'center',
-      fontSize: 20,
-      marginBottom: 12,
-      fontWeight: 600,
-      color: darkMode ? 'white' : '#1a1a1a',
-    },
-    noSnippetsDescription: {
-      textAlign: 'center',
-      fontSize: 16,
-      color: darkMode ? 'white' : 'grey',
-      marginBottom: 30,
-    },
-    emptyAddSnippet: {
-      height: 52,
-      width: 300,
-      marginBottom: 8,
-      borderRadius: 9999,
-      backgroundColor: darkMode ? 'white' : '#4D88E9',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    emptyAddSnippetText: {
-      color: darkMode ? '#1a1a1a' : 'white',
-      fontSize: 20,
-      fontWeight: '600',
-    },
+
     sectionContainer: {
-      borderRadius: 16,
-      padding: 10,
-      marginBottom: 20,
+      borderRadius: 10,
+      padding: 5,
+      marginBottom: 10,
       backgroundColor: darkMode ? '#1a1a1a' : '#f3f3f7',
       overflow: 'hidden',
     },

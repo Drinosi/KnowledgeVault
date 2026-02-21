@@ -27,7 +27,7 @@ const FilterAndSearch = ({ setSearchQuery }: Props) => {
       <TextInput
         placeholder="Search snippets"
         style={styles.input}
-        placeholderTextColor={darkMode ? 'white' : '#1a1a1a'}
+        placeholderTextColor={darkMode ? '#a2a6b1' : '#1a1a1a'}
         value={inputValue}
         onChangeText={setInputValue}
       />
@@ -40,16 +40,19 @@ const createStyles = (darkMode: boolean) =>
     wrapper: {
       flexDirection: 'row',
       alignItems: 'center',
+      paddingBottom: 23,
       paddingVertical: 8,
+      borderBottomWidth: 1,
+      borderColor: darkMode ? '#676c7c' : 'lightgrey',
       flex: 1,
     },
     input: {
-      paddingVertical: 20,
-      paddingHorizontal: 30,
+      paddingVertical: 10,
+      paddingHorizontal: 15,
       color: darkMode ? 'white' : '#1a1a1a',
       borderColor: darkMode ? 'white' : 'lightgrey',
       backgroundColor: darkMode ? '#1a1a1a' : '#f3f3f7',
-      borderRadius: 12,
+      borderRadius: 4,
       flex: 1,
     },
   })
