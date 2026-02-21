@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useNavigation } from 'expo-router'
-import { useEffect, useState } from 'react'
-import { Keyboard, View, Text, Pressable, TextInput, ScrollView, StyleSheet } from 'react-native'
+import { useCallback, useEffect, useState } from 'react'
+import { View, Text, Pressable, TextInput, ScrollView, StyleSheet } from 'react-native'
 
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
@@ -36,7 +36,7 @@ export default function SnippetDetails() {
 
   useEffect(() => {
     navigation.setOptions({ title: data?.title || 'Untitled' })
-  }, [data?.title])
+  }, [data?.title, navigation])
 
   useEffect(() => {
     ;(async () => {
@@ -53,17 +53,17 @@ export default function SnippetDetails() {
         }
       }
     })()
-  }, [])
+  }, [params.snippet])
 
-  const hasChanges = () => {
+  const hasChanges = useCallback(() => {
     if (!data) return false
 
     const combinedOriginal = data.title + '\n' + data.content
 
     if (combinedOriginal.length && content.length) return combinedOriginal !== content
-  }
+  }, [content, data])
 
-  async function saveChanges() {
+  const saveChanges = useCallback(async () => {
     if (!data || !hasChanges()) return
 
     const entryId = Array.isArray(params.snippet) ? params.snippet[0] : params.snippet
@@ -88,7 +88,7 @@ export default function SnippetDetails() {
     dispatch(updateEntry(updatedEntry))
     setData(updatedEntry)
     setIsPreview(true)
-  }
+  }, [content, data, dispatch, hasChanges, params.snippet])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', async () => {
@@ -98,7 +98,7 @@ export default function SnippetDetails() {
     })
 
     return unsubscribe
-  }, [content, data])
+  }, [content, data, navigation, hasChanges, saveChanges])
 
   if (!data) {
     return (

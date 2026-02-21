@@ -4,7 +4,7 @@ import ColorThemeSwitch from '../../components/ColorThemeSwitch'
 
 import useIsDarkMode from '../../hooks/useIsDarkMode'
 
-export default function settings() {
+export default function Settings() {
   const { darkMode } = useIsDarkMode()
 
   const styles = useMemo(() => createStyles(darkMode), [darkMode])

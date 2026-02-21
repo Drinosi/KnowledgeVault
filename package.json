@@ -7,7 +7,8 @@
     "android": "expo start --android",
     "fresh-cache": "npx expo start -c",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "lint": "expo lint"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",

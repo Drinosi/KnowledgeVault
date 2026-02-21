@@ -87,7 +87,7 @@ export default function App() {
 
       dispatch(setEntries(results))
     })()
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     let data = [...entries]
