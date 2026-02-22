@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { Text, View, SectionList, StyleSheet, ScrollView } from 'react-native'
 
-import { runMigrations } from '../../db/migrations'
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
 
@@ -25,7 +24,13 @@ export default function App() {
 
   const entries = useSelector((state: RootState) => state.entries.entries)
 
-  const [filteredEntries, setFilteredEntries] = useState<Entry[]>(entries)
+  const filteredEntries = useMemo(() => {
+    if (!searchQuery.trim()) return entries
+    const q = searchQuery.toLowerCase()
+    return entries.filter(
+      e => e.title.toLowerCase().includes(q) || e.content.toLowerCase().includes(q),
+    )
+  }, [entries, searchQuery])
 
   const sections = useMemo(() => {
     const now = new Date()
@@ -77,74 +82,35 @@ export default function App() {
 
   useEffect(() => {
     ;(async () => {
-      await runMigrations()
       const results = await EntryRepository.getAll(100, 0)
 
       dispatch(setEntries(results))
     })()
   }, [dispatch])
 
-  useEffect(() => {
-    let data = [...entries]
-
-    if (searchQuery.trim() !== '') {
-      const q = searchQuery.toLowerCase()
-      data = data.filter(
-        e => e.title.toLowerCase().includes(q) || e.content.toLowerCase().includes(q),
-      )
-    }
-
-    setFilteredEntries(data)
-  }, [entries, searchQuery])
-
   return (
     <ScrollView style={styles.wrapper}>
       {entries.length ? (
         <>
-          <Text style={{ color: darkMode ? '#a2a6b1' : 'black', fontSize: 24, fontWeight: 600 }}>
-            {entries.length} snippets
-          </Text>
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              flexDirection: 'row',
-              gap: 10,
-            }}
-          >
+          <Text style={styles.title}>{filteredEntries.length} snippets</Text>
+          <View style={styles.searchWrapper}>
             <FilterAndSearch setSearchQuery={setSearchQuery} />
           </View>
           <SectionList
             sections={sections}
-            scrollEnabled={false}
+            ListEmptyComponent={
+              <View style={styles.noResultsWrapper}>
+                <Text style={styles.noResults}>{`No results for "${searchQuery}"`}</Text>
+                <Text style={styles.noResultsText}>Check spelling or try a new search</Text>
+              </View>
+            }
             keyExtractor={item => item.id}
             renderSectionHeader={({ section }) => (
-              <>
-                <Text
-                  style={{
-                    color: darkMode ? '#a2a6b1' : '#1a1a1a',
-                    fontSize: 20,
-                    fontWeight: 500,
-                    marginBottom: 6,
-                    marginTop: 12,
-                  }}
-                >
-                  {section.title}
-                </Text>
-
-                <View style={styles.sectionContainer}>
-                  {section.data.map((item, index) => (
-                    <SnippetCard
-                      length={section.data.length}
-                      index={index}
-                      key={item.id}
-                      item={item}
-                    />
-                  ))}
-                </View>
-              </>
+              <Text style={styles.sectionTitle}>{section.title}</Text>
             )}
-            renderItem={() => null}
+            renderItem={({ item, index, section }) => (
+              <SnippetCard length={section.data.length} index={index} item={item} />
+            )}
           />
         </>
       ) : (
@@ -158,32 +124,38 @@ const createStyles = (darkMode: boolean) =>
   StyleSheet.create({
     wrapper: {
       flex: 1,
-      padding: 20,
+      padding: 15,
       backgroundColor: darkMode ? 'black' : 'white',
     },
-    grid: {
-      marginBottom: 8,
+    title: {
+      color: darkMode ? '#a2a6b1' : 'black',
+      fontSize: 24,
+      fontWeight: 600,
     },
-    addSnippet: {
-      height: 60,
-      width: 60,
-      borderRadius: 99,
-      backgroundColor: darkMode ? 'white' : '#4D88E9',
-      alignItems: 'center',
+    searchWrapper: {
       justifyContent: 'center',
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: 10,
     },
-    addSnippetText: {
-      color: darkMode ? '#1a1a1a' : '#a2a6b1',
-      fontSize: 30,
-      marginBottom: 4,
-      textAlign: 'center',
+    sectionTitle: {
+      color: darkMode ? '#a2a6b1' : '#1a1a1a',
+      fontSize: 20,
+      fontWeight: 500,
+      marginBottom: 8,
+      marginTop: 25,
     },
-
-    sectionContainer: {
-      borderRadius: 10,
-      padding: 5,
-      marginBottom: 10,
-      backgroundColor: darkMode ? '#1a1a1a' : '#f3f3f7',
-      overflow: 'hidden',
+    noResults: {
+      color: darkMode ? 'white' : 'black',
+      fontWeight: 600,
+      marginVertical: 10,
+      paddingTop: 20,
+      fontSize: 28,
+    },
+    noResultsWrapper: {
+      alignItems: 'center',
+    },
+    noResultsText: {
+      color: darkMode ? '#a2a6b1' : 'black',
     },
   })

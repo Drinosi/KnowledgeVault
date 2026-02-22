@@ -23,3 +23,10 @@ CREATE TABLE IF NOT EXISTS entry_tags (
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
 `
+
+export const createMetaTable = `
+  CREATE TABLE IF NOT EXISTS meta (
+    key TEXT PRIMARY KEY,
+    value TEXT
+  );
+`

@@ -58,6 +58,11 @@ const createStyles = (darkMode: boolean, index: number, length: number) =>
       maxHeight: 200,
       borderBottomWidth: index !== length - 1 ? 1 : 0,
       borderBottomColor: darkMode ? '#676c7c' : 'lightgrey',
+      backgroundColor: darkMode ? '#1a1a1a' : '#f3f3f7',
+      borderTopRightRadius: index === 0 ? 10 : 0,
+      borderTopLeftRadius: index === 0 ? 10 : 0,
+      borderBottomLeftRadius: index === length - 1 ? 10 : 0,
+      borderBottomRightRadius: index === length - 1 ? 10 : 0,
     },
 
     content: {
