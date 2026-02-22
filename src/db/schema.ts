@@ -5,9 +5,9 @@ CREATE TABLE IF NOT EXISTS entries (
   id TEXT PRIMARY KEY NOT NULL,
   title TEXT NOT NULL,
   content TEXT NOT NULL,
-  language TEXT,
   created_at INTEGER NOT NULL,
-  updated_at INTEGER
+  updated_at INTEGER,
+  locked INTEGER default null
 );
 
 CREATE TABLE IF NOT EXISTS tags (

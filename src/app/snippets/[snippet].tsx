@@ -11,7 +11,24 @@ import { AppDispatch } from '../../store'
 import { useDispatch } from 'react-redux'
 import { updateEntry } from '../../store/slices/entriesSlice'
 
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
+
 import useIsDarkMode from '../../hooks/useIsDarkMode'
+
+import { setUnlocked } from '../../store/slices/securitySlice'
+
+import * as LocalAuthentication from 'expo-local-authentication'
+
+const authenticate = async () => {
+  const result = await LocalAuthentication.authenticateAsync({
+    promptMessage: 'Authenticate to view snippets',
+    fallbackLabel: 'Use passcode',
+    disableDeviceFallback: false,
+  })
+
+  return result.success
+}
 
 export default function SnippetDetails() {
   const [data, setData] = useState<Entry>()
@@ -26,6 +43,24 @@ export default function SnippetDetails() {
 
   const { darkMode } = useIsDarkMode()
   const styles = createStyles(darkMode)
+
+  const unlocked = useSelector((state: RootState) => state.security.unlocked)
+
+  useEffect(() => {
+    const runAuth = async () => {
+      if (unlocked || !data?.locked) return
+
+      const ok = await authenticate()
+
+      if (ok) {
+        dispatch(setUnlocked(true))
+      } else {
+        navigation.goBack()
+      }
+    }
+
+    runAuth()
+  }, [unlocked, dispatch, navigation, data])
 
   useEffect(() => {
     if (!data) return
