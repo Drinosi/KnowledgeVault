@@ -89,7 +89,7 @@ export default function App() {
   }, [dispatch])
 
   return (
-    <ScrollView style={styles.wrapper}>
+    <View style={styles.wrapper}>
       {entries.length ? (
         <>
           <Text style={styles.title}>{filteredEntries.length} snippets</Text>
@@ -109,14 +109,19 @@ export default function App() {
               <Text style={styles.sectionTitle}>{section.title}</Text>
             )}
             renderItem={({ item, index, section }) => (
-              <SnippetCard length={section.data.length} index={index} item={item} />
+              <SnippetCard
+                darkMode={darkMode}
+                length={section.data.length}
+                index={index}
+                item={item}
+              />
             )}
           />
         </>
       ) : (
         <EmptyStateHome darkMode={darkMode} />
       )}
-    </ScrollView>
+    </View>
   )
 }
 

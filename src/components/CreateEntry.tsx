@@ -23,9 +23,9 @@ export default function CreateEntry() {
       id: uuidv4(),
       title: '',
       content: '',
-      language: '',
       createdAt: now,
       updatedAt: null,
+      locked: null,
     }
 
     await EntryRepository.create(newEntry)

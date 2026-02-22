@@ -5,9 +5,9 @@ type DBEntryRow = {
   id: string
   title: string
   content: string
-  language: string | null
   created_at: number
   updated_at: number | null
+  locked: 1 | null
 }
 
 export const EntryRepository = {
@@ -17,15 +17,15 @@ export const EntryRepository = {
     await db.runAsync(
       `
       INSERT OR REPLACE INTO entries
-      (id, title, content, language, created_at, updated_at)
+      (id, title, content, created_at, updated_at, locked)
       VALUES (?, ?, ?, ?, ?, ?)
       `,
       entry.id,
       entry.title,
       entry.content,
-      entry.language ?? null,
       entry.createdAt,
       entry.updatedAt ?? null,
+      entry.locked ?? null,
     )
   },
 
@@ -37,9 +37,9 @@ export const EntryRepository = {
         id,
         title,
         substr(content, 1, 100) as content,
-        language,
         created_at,
-        updated_at
+        updated_at,
+        locked
        FROM entries
        LIMIT ? OFFSET ?`,
       [limit, offset],
@@ -49,9 +49,9 @@ export const EntryRepository = {
       id: row.id,
       title: row.title,
       content: row.content,
-      language: row.language,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
+      locked: row.locked,
     }))
   },
 
@@ -69,9 +69,9 @@ export const EntryRepository = {
       id: row.id,
       title: row.title,
       content: row.content,
-      language: row.language,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
+      locked: row.locked,
     }
   },
 
@@ -91,7 +91,7 @@ export const EntryRepository = {
     const columnMap: Record<string, string> = {
       title: 'title',
       content: 'content',
-      language: 'language',
+      locked: 'locked',
     }
 
     const fields: string[] = []
@@ -128,9 +128,9 @@ export const EntryRepository = {
       id,
       title,
       substr(content, 1, 200) as content,
-      language,
       created_at,
-      updated_at
+      updated_at,
+      locked
     FROM entries
     WHERE title LIKE '%' || ? || '%'
        OR content LIKE '%' || ? || '%'
@@ -142,9 +142,9 @@ export const EntryRepository = {
       id: row.id,
       title: row.title,
       content: row.content,
-      language: row.language,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
+      locked: row.locked,
     }))
   },
 }

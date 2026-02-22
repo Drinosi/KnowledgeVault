@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import entriesReducer from './slices/entriesSlice'
 import themeReducer from './slices/colorThemeSlice'
+import securityReducer from './slices/securitySlice'
 
 const themePersistConfig = {
   key: 'theme',
@@ -16,6 +17,7 @@ export const store = configureStore({
   reducer: {
     entries: entriesReducer,
     theme: persistedThemeReducer,
+    security: securityReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
