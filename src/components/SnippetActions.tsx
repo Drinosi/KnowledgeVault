@@ -31,11 +31,12 @@ export default function SnippetActions({ modalOpen, setModalOpen, item, darkMode
             <View style={styles.actionWrapper}>
               <Pressable
                 onPress={async () => {
-                  await EntryRepository.update(item.id, { locked: 1 })
+                  const shouldLockNote = item.locked ? null : 1
+                  await EntryRepository.update(item.id, { locked: shouldLockNote })
                   dispatch(
                     updateEntry({
                       ...item,
-                      locked: 1,
+                      locked: shouldLockNote,
                       updatedAt: Date.now(),
                     }),
                   )
@@ -43,9 +44,9 @@ export default function SnippetActions({ modalOpen, setModalOpen, item, darkMode
                 }}
                 style={styles.iconButton}
               >
-                <MaterialIcons name="lock" size={22} color="black" />
+                <FontAwesome name={item.locked ? 'unlock' : 'lock'} size={22} color="black" />
               </Pressable>
-              <Text style={styles.actionText}>Lock</Text>
+              <Text style={styles.actionText}>{item.locked ? 'Unlock note' : 'Lock note'}</Text>
             </View>
             <View style={styles.actionWrapper}>
               <Pressable onPress={() => setModalOpen(false)} style={styles.iconButton}>
@@ -77,7 +78,7 @@ export default function SnippetActions({ modalOpen, setModalOpen, item, darkMode
   )
 }
 
-const createStyles = darkMode =>
+const createStyles = (darkMode: boolean) =>
   StyleSheet.create({
     overlay: {
       flex: 1,
