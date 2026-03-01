@@ -19,6 +19,7 @@ import useIsDarkMode from '../../hooks/useIsDarkMode'
 import { setUnlocked } from '../../store/slices/securitySlice'
 
 import * as LocalAuthentication from 'expo-local-authentication'
+import { setNotification } from '../../store/slices/notificationSlice'
 
 const authenticate = async () => {
   const result = await LocalAuthentication.authenticateAsync({
@@ -75,17 +76,20 @@ export default function SnippetDetails() {
 
   useEffect(() => {
     ;(async () => {
-      const response = await EntryRepository.getById(params.snippet as string)
-
-      if (response) {
-        setData(response)
-        if (response.title && !response.content) {
-          setContent(response.title)
-        } else {
-          setContent(
-            response.content && response.title ? response.title + '\n' + response.content : '',
-          )
+      try {
+        const response = await EntryRepository.getById(params.snippet as string)
+        if (response) {
+          setData(response)
+          if (response.title && !response.content) {
+            setContent(response.title)
+          } else {
+            setContent(
+              response.content && response.title ? response.title + '\n' + response.content : '',
+            )
+          }
         }
+      } catch (error: any) {
+        dispatch(setNotification({ type: 'error', message: error.message }))
       }
     })()
   }, [params.snippet])
@@ -112,13 +116,13 @@ export default function SnippetDetails() {
       content: newContent,
     }
 
-    await EntryRepository.update(entryId, changes)
-
     const updatedEntry: Entry = {
       ...data,
       ...changes,
       updatedAt: Date.now(),
     }
+
+    await EntryRepository.update(entryId, changes)
 
     dispatch(updateEntry(updatedEntry))
     setData(updatedEntry)

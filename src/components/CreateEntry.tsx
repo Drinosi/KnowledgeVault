@@ -13,6 +13,7 @@ import { AppDispatch } from '../store'
 import { useDispatch } from 'react-redux'
 
 import { addEntry } from '../store/slices/entriesSlice'
+import { setNotification } from '../store/slices/notificationSlice'
 
 export default function CreateEntry() {
   const dispatch: AppDispatch = useDispatch()
@@ -28,11 +29,13 @@ export default function CreateEntry() {
       locked: null,
     }
 
-    await EntryRepository.create(newEntry)
-
-    dispatch(addEntry(newEntry))
-
-    router.push(`/snippets/${newEntry.id}`)
+    try {
+      await EntryRepository.create(newEntry)
+      dispatch(addEntry(newEntry))
+      router.push(`/snippets/${newEntry.id}`)
+    } catch (error: any) {
+      dispatch(setNotification({ type: 'error', message: error.message }))
+    }
   }
 
   return (

@@ -62,7 +62,7 @@ const SnippetCard = ({ darkMode, item, index, length }: SnippetCardProps) => {
         {item.locked !== null && (
           <FontAwesome
             style={{ position: 'absolute', right: 20, top: 20 }}
-            name={item.locked === 1 && !unlocked ? 'lock' : unlocked ? 'unlock' : null}
+            name={item.locked === 1 && !unlocked ? 'lock' : unlocked ? 'unlock' : 'unlock'}
             size={22}
             color="grey"
           />

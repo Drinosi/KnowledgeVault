@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux'
 import { Entry } from '../domain/Entry'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useMemo } from 'react'
+import { setNotification } from '../store/slices/notificationSlice'
 
 type props = {
   modalOpen: boolean
@@ -31,21 +32,27 @@ export default function SnippetActions({ modalOpen, setModalOpen, item, darkMode
             <View style={styles.actionWrapper}>
               <Pressable
                 onPress={async () => {
-                  await EntryRepository.update(item.id, { locked: 1 })
-                  dispatch(
-                    updateEntry({
-                      ...item,
-                      locked: 1,
-                      updatedAt: Date.now(),
-                    }),
-                  )
-                  setModalOpen(false)
+                  const shouldLockNote = item.locked ? null : 1
+                  try {
+                    await EntryRepository.update(item.id, { locked: shouldLockNote })
+                    dispatch(
+                      updateEntry({
+                        ...item,
+                        locked: shouldLockNote,
+                        updatedAt: Date.now(),
+                      }),
+                    )
+                  } catch (error: any) {
+                    dispatch(setNotification({ type: 'error', message: error.message }))
+                  } finally {
+                    setModalOpen(false)
+                  }
                 }}
                 style={styles.iconButton}
               >
-                <MaterialIcons name="lock" size={22} color="black" />
+                <FontAwesome name={item.locked ? 'unlock' : 'lock'} size={22} color="black" />
               </Pressable>
-              <Text style={styles.actionText}>Lock</Text>
+              <Text style={styles.actionText}>{item.locked ? 'Unlock note' : 'Lock note'}</Text>
             </View>
             <View style={styles.actionWrapper}>
               <Pressable onPress={() => setModalOpen(false)} style={styles.iconButton}>
@@ -56,9 +63,14 @@ export default function SnippetActions({ modalOpen, setModalOpen, item, darkMode
             <View style={styles.actionWrapper}>
               <Pressable
                 onPress={async () => {
-                  await EntryRepository.delete(item.id)
-                  dispatch(removeEntry(item.id))
-                  setModalOpen(false)
+                  try {
+                    await EntryRepository.delete(item.id)
+                    dispatch(removeEntry(item.id))
+                  } catch (error: any) {
+                    dispatch(setNotification({ type: 'error', message: error.message }))
+                  } finally {
+                    setModalOpen(false)
+                  }
                 }}
                 style={styles.iconButton}
               >
@@ -77,7 +89,7 @@ export default function SnippetActions({ modalOpen, setModalOpen, item, darkMode
   )
 }
 
-const createStyles = darkMode =>
+const createStyles = (darkMode: boolean) =>
   StyleSheet.create({
     overlay: {
       flex: 1,
