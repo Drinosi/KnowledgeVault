@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
-import { Text, View, SectionList, StyleSheet, ScrollView } from 'react-native'
+import { Text, View, SectionList, StyleSheet } from 'react-native'
 
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
@@ -14,6 +14,7 @@ import FilterAndSearch from '../../components/FilterAndSearch'
 import useIsDarkMode from '../../hooks/useIsDarkMode'
 
 import EmptyStateHome from '../../components/EmptyStateHome'
+import { setNotification } from '../../store/slices/notificationSlice'
 
 export default function App() {
   const { darkMode } = useIsDarkMode()
@@ -82,9 +83,12 @@ export default function App() {
 
   useEffect(() => {
     ;(async () => {
-      const results = await EntryRepository.getAll(100, 0)
-
-      dispatch(setEntries(results))
+      try {
+        const results = await EntryRepository.getAll(100, 0)
+        dispatch(setEntries(results))
+      } catch (error: any) {
+        dispatch(setNotification({ type: 'error', message: error.message }))
+      }
     })()
   }, [dispatch])
 

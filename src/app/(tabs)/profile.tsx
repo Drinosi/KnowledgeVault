@@ -8,6 +8,7 @@ import { AppDispatch } from '../../store'
 import { clearEntries } from '../../store/slices/entriesSlice'
 
 import Feather from '@expo/vector-icons/Feather'
+import { setNotification } from '../../store/slices/notificationSlice'
 
 const Profile = () => {
   const [loading, setLoading] = useState(false)
@@ -18,10 +19,9 @@ const Profile = () => {
     setLoading(true)
     try {
       await EntryRepository.deleteAll()
-
       dispatch(clearEntries())
     } catch (error: any) {
-      console.error(error.message)
+      dispatch(setNotification({ type: 'error', message: error.message }))
     } finally {
       setLoading(false)
     }

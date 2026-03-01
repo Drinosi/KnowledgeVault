@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux'
 import { Entry } from '../domain/Entry'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useMemo } from 'react'
+import { setNotification } from '../store/slices/notificationSlice'
 
 type props = {
   modalOpen: boolean
@@ -32,15 +33,20 @@ export default function SnippetActions({ modalOpen, setModalOpen, item, darkMode
               <Pressable
                 onPress={async () => {
                   const shouldLockNote = item.locked ? null : 1
-                  await EntryRepository.update(item.id, { locked: shouldLockNote })
-                  dispatch(
-                    updateEntry({
-                      ...item,
-                      locked: shouldLockNote,
-                      updatedAt: Date.now(),
-                    }),
-                  )
-                  setModalOpen(false)
+                  try {
+                    await EntryRepository.update(item.id, { locked: shouldLockNote })
+                    dispatch(
+                      updateEntry({
+                        ...item,
+                        locked: shouldLockNote,
+                        updatedAt: Date.now(),
+                      }),
+                    )
+                  } catch (error: any) {
+                    dispatch(setNotification({ type: 'error', message: error.message }))
+                  } finally {
+                    setModalOpen(false)
+                  }
                 }}
                 style={styles.iconButton}
               >
@@ -57,9 +63,14 @@ export default function SnippetActions({ modalOpen, setModalOpen, item, darkMode
             <View style={styles.actionWrapper}>
               <Pressable
                 onPress={async () => {
-                  await EntryRepository.delete(item.id)
-                  dispatch(removeEntry(item.id))
-                  setModalOpen(false)
+                  try {
+                    await EntryRepository.delete(item.id)
+                    dispatch(removeEntry(item.id))
+                  } catch (error: any) {
+                    dispatch(setNotification({ type: 'error', message: error.message }))
+                  } finally {
+                    setModalOpen(false)
+                  }
                 }}
                 style={styles.iconButton}
               >
