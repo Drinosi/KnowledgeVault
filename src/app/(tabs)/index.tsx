@@ -71,7 +71,7 @@ export default function App() {
         groups.older.push(entry)
       }
     })
-
+    
     return [
       { title: 'Today', data: groups.today },
       { title: 'Yesterday', data: groups.yesterday },
@@ -80,6 +80,11 @@ export default function App() {
       { title: 'Older', data: groups.older },
     ].filter(section => section.data.length > 0)
   }, [filteredEntries])
+
+
+  
+
+  
 
   useEffect(() => {
     ;(async () => {
