@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useNavigation } from 'expo-router'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useRef } from 'react'
 import { View, Text, Pressable, TextInput, ScrollView, StyleSheet } from 'react-native'
 
 import { EntryRepository } from '../../repositories/EntryRepository'
@@ -31,21 +31,57 @@ const authenticate = async () => {
   return result.success
 }
 
+
+
+const markdownStyles = (darkMode: boolean) => ({
+  // body: { color: darkMode ? 'white' : 'black' },
+  heading1: { color: darkMode ? 'red' : 'red' },
+  paragraph: { color: darkMode ? 'white' : 'black' },
+  bullet_list: { color: darkMode ? 'white' : 'black' },
+  order_list: { color: darkMode ? 'white' : 'black' },
+  code_block: {
+    backgroundColor: '#2d2d2d',
+    color: 'yellow',
+    padding: 10,
+    borderRadius: 6,
+    // fontFamily: 'Courier',
+    fontSize: 14,
+  },
+  inline_code: {
+    backgroundColor: '#444',
+    color: 'yellow',
+    paddingHorizontal: 4,
+    borderRadius: 4,
+    // fontFamily: 'Courier', 
+  },
+})
+
 export default function SnippetDetails() {
   const [data, setData] = useState<Entry>()
   const params = useLocalSearchParams()
-
+  const [content, setContent] = useState('')
   const [isPreview, setIsPreview] = useState(true)
+  const typingTimeout = useRef<NodeJS.Timeout | null>(null)
 
   const dispatch: AppDispatch = useDispatch()
   const navigation = useNavigation()
-
-  const [content, setContent] = useState('')
 
   const { darkMode } = useIsDarkMode()
   const styles = createStyles(darkMode)
 
   const unlocked = useSelector((state: RootState) => state.security.unlocked)
+
+  function autoSave(value:string){
+     
+    setContent(value) 
+   if (typingTimeout.current) {
+      clearTimeout(typingTimeout.current)
+    }
+    typingTimeout.current = setTimeout(() => {
+      saveChanges(value)
+      setIsPreview(true)
+    }, 3000)
+ }
 
   useEffect(() => {
     const runAuth = async () => {
@@ -65,7 +101,7 @@ export default function SnippetDetails() {
 
   useEffect(() => {
     if (!data) return
-    if (!data?.content) {
+    if (!data.content) {
       setIsPreview(false)
     }
   }, [data])
@@ -102,12 +138,12 @@ export default function SnippetDetails() {
     if (combinedOriginal.length && content.length) return combinedOriginal !== content
   }, [content, data])
 
-  const saveChanges = useCallback(async () => {
+  const saveChanges = useCallback(async (value:string) => {
     if (!data || !hasChanges()) return
 
     const entryId = Array.isArray(params.snippet) ? params.snippet[0] : params.snippet
 
-    const lines = content.split('\n')
+    const lines = value.split('\n')
     const newTitle = lines[0]
     const newContent = lines.slice(1).join('\n')
 
@@ -132,7 +168,7 @@ export default function SnippetDetails() {
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', async () => {
       if (hasChanges()) {
-        await saveChanges()
+        await saveChanges(content)
       }
     })
 
@@ -178,8 +214,8 @@ export default function SnippetDetails() {
             <Pressable onPress={() => setIsPreview(false)}>
               <View style={styles.contentContainer}>
                 <View>
-                  {data.title && <Markdown style={styles}>{data.title}</Markdown>}
-                  <Markdown style={styles}>{data.content}</Markdown>
+                  {data.title && <Markdown style={markdownStyles(darkMode)}>{data.title}</Markdown>}
+                  <Markdown style={markdownStyles(darkMode)}>{data.content}</Markdown>
                 </View>
               </View>
             </Pressable>
@@ -190,7 +226,7 @@ export default function SnippetDetails() {
                 placeholderTextColor="grey"
                 style={styles.contentInput}
                 value={content}
-                onChangeText={setContent}
+                onChangeText={autoSave}
                 multiline
                 autoFocus
               />
@@ -201,6 +237,7 @@ export default function SnippetDetails() {
     </>
   )
 }
+
 
 const createStyles = (darkMode: boolean) =>
   StyleSheet.create({
@@ -236,31 +273,8 @@ const createStyles = (darkMode: boolean) =>
     errorContainer: {
       padding: 20,
     },
-    heading1: {
-      color: darkMode ? 'white' : '#1a1a1a',
-    },
-    heading2: {
-      color: darkMode ? 'white' : '#1a1a1a',
-    },
-    heading3: {
-      color: darkMode ? 'white' : '#1a1a1a',
-    },
-    heading5: {
-      color: darkMode ? 'white' : '#1a1a1a',
-    },
-    heading6: {
-      color: darkMode ? 'white' : '#1a1a1a',
-    },
-    paragraph: {
-      color: darkMode ? 'white' : '#1a1a1a',
-    },
-    bullet_list: {
-      color: darkMode ? 'white' : '#1a1a1a',
-    },
-    order_list: {
-      color: darkMode ? 'white' : '#1a1a1a',
-    },
     hr: {
       color: darkMode ? 'white' : '#1a1a1a',
     },
   })
+

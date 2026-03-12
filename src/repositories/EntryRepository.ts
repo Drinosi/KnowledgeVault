@@ -41,6 +41,7 @@ export const EntryRepository = {
         updated_at,
         locked
        FROM entries
+       ORDER BY created_at DESC
        LIMIT ? OFFSET ?`,
       [limit, offset],
     )

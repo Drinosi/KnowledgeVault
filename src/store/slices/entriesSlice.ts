@@ -16,8 +16,8 @@ const entriesSlice = createSlice({
     setEntries(state, action: PayloadAction<Entry[]>) {
       state.entries = action.payload
     },
-    addEntry(state, action: PayloadAction<Entry>) {
-      state.entries.push(action.payload)
+    addEntry(state, action: PayloadAction<Entry>) {      
+      state.entries.unshift(action.payload)
     },
     updateEntry(state, action: PayloadAction<Entry>) {
       const index = state.entries.findIndex(e => e.id === action.payload.id)
