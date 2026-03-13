@@ -77,6 +77,15 @@ export default function SnippetDetails() {
 
   const unlocked = useSelector((state: RootState) => state.security.unlocked)
 
+  const parseContent = (value: string) => {
+    const lines = value.split('\n')
+    const title = lines[0] || ''
+    const body = lines.slice(1).join('\n')
+    return { title, body }
+  }
+
+  const { title, body } = parseContent(content)
+
   function autoSave(value: string) {
     setContent(value)
 
@@ -138,25 +147,22 @@ export default function SnippetDetails() {
 
   const hasChanges = useCallback(() => {
     if (!data) return false
-
-    const combinedOriginal = data.title + '\n' + data.content
-
-    if (combinedOriginal.length && content.length) return combinedOriginal !== content
+    return content !== `${data.title}\n${data.content}`
   }, [content, data])
 
   const saveChanges = useCallback(
     async (value: string) => {
-      if (!data || !hasChanges()) return
+      if (!data) return
 
       const entryId = Array.isArray(params.snippet) ? params.snippet[0] : params.snippet
 
-      const lines = value.split('\n')
-      const newTitle = lines[0]
-      const newContent = lines.slice(1).join('\n')
+      const { title, body } = parseContent(value)
+
+      if (title === data.title && body === data.content) return
 
       const changes: Partial<Entry> = {
-        title: newTitle,
-        content: newContent,
+        title,
+        content: body,
       }
 
       const updatedEntry: Entry = {
@@ -171,7 +177,7 @@ export default function SnippetDetails() {
       setData(updatedEntry)
       setIsPreview(true)
     },
-    [content, data, dispatch, hasChanges, params.snippet],
+    [data, dispatch, params.snippet],
   )
 
   useEffect(() => {
@@ -223,15 +229,15 @@ export default function SnippetDetails() {
             <Pressable onPress={() => setIsPreview(false)}>
               <View style={styles.contentContainer}>
                 <View>
-                  {data.title && <Markdown style={markdownStyles(darkMode)}>{data.title}</Markdown>}
-                  <Markdown style={markdownStyles(darkMode)}>{data.content}</Markdown>
+                  {title && <Markdown style={markdownStyles(darkMode)}>{title}</Markdown>}
+                  <Markdown style={markdownStyles(darkMode)}>{body}</Markdown>
                 </View>
               </View>
             </Pressable>
           ) : (
             <Pressable>
               <TextInput
-                placeholder="Start typing... first line will be used as title"
+                placeholder="Simply start typing."
                 placeholderTextColor="grey"
                 style={styles.contentInput}
                 value={content}
