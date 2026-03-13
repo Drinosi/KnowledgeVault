@@ -31,28 +31,34 @@ const authenticate = async () => {
   return result.success
 }
 
-
-
 const markdownStyles = (darkMode: boolean) => ({
-  // body: { color: darkMode ? 'white' : 'black' },
-  heading1: { color: darkMode ? 'red' : 'red' },
-  paragraph: { color: darkMode ? 'white' : 'black' },
-  bullet_list: { color: darkMode ? 'white' : 'black' },
-  order_list: { color: darkMode ? 'white' : 'black' },
-  code_block: {
-    backgroundColor: '#2d2d2d',
-    color: 'yellow',
+  body: { color: darkMode ? 'white' : '#1a1a1a' },
+
+  heading1: { color: darkMode ? 'white' : '#1a1a1a' },
+
+  paragraph: { color: darkMode ? 'white' : '#1a1a1a' },
+
+  bullet_list: { color: darkMode ? 'white' : '#1a1a1a' },
+
+  ordered_list: { color: darkMode ? 'white' : '#1a1a1a' },
+
+  fence: {
+    backgroundColor: darkMode ? 'white' : 'lightgrey',
+    color: '#1a1a1a',
     padding: 10,
-    borderRadius: 6,
-    // fontFamily: 'Courier',
+    borderRadius: 4,
+    borderWidth: 1,
+    fontFamily: 'Courier',
     fontSize: 14,
+    marginVertical: 5,
   },
-  inline_code: {
-    backgroundColor: '#444',
-    color: 'yellow',
+
+  code_inline: {
+    backgroundColor: darkMode ? 'white' : 'lightgrey',
+    color: '#1a1a1a',
     paddingHorizontal: 4,
     borderRadius: 4,
-    // fontFamily: 'Courier', 
+    fontFamily: 'Courier',
   },
 })
 
@@ -71,17 +77,17 @@ export default function SnippetDetails() {
 
   const unlocked = useSelector((state: RootState) => state.security.unlocked)
 
-  function autoSave(value:string){
-     
-    setContent(value) 
-   if (typingTimeout.current) {
+  function autoSave(value: string) {
+    setContent(value)
+
+    if (typingTimeout.current) {
       clearTimeout(typingTimeout.current)
     }
     typingTimeout.current = setTimeout(() => {
       saveChanges(value)
       setIsPreview(true)
-    }, 3000)
- }
+    }, 2000)
+  }
 
   useEffect(() => {
     const runAuth = async () => {
@@ -101,7 +107,7 @@ export default function SnippetDetails() {
 
   useEffect(() => {
     if (!data) return
-    if (!data.content) {
+    if (!data.content && !data.title) {
       setIsPreview(false)
     }
   }, [data])
@@ -138,32 +144,35 @@ export default function SnippetDetails() {
     if (combinedOriginal.length && content.length) return combinedOriginal !== content
   }, [content, data])
 
-  const saveChanges = useCallback(async (value:string) => {
-    if (!data || !hasChanges()) return
+  const saveChanges = useCallback(
+    async (value: string) => {
+      if (!data || !hasChanges()) return
 
-    const entryId = Array.isArray(params.snippet) ? params.snippet[0] : params.snippet
+      const entryId = Array.isArray(params.snippet) ? params.snippet[0] : params.snippet
 
-    const lines = value.split('\n')
-    const newTitle = lines[0]
-    const newContent = lines.slice(1).join('\n')
+      const lines = value.split('\n')
+      const newTitle = lines[0]
+      const newContent = lines.slice(1).join('\n')
 
-    const changes: Partial<Entry> = {
-      title: newTitle,
-      content: newContent,
-    }
+      const changes: Partial<Entry> = {
+        title: newTitle,
+        content: newContent,
+      }
 
-    const updatedEntry: Entry = {
-      ...data,
-      ...changes,
-      updatedAt: Date.now(),
-    }
+      const updatedEntry: Entry = {
+        ...data,
+        ...changes,
+        updatedAt: Date.now(),
+      }
 
-    await EntryRepository.update(entryId, changes)
+      await EntryRepository.update(entryId, changes)
 
-    dispatch(updateEntry(updatedEntry))
-    setData(updatedEntry)
-    setIsPreview(true)
-  }, [content, data, dispatch, hasChanges, params.snippet])
+      dispatch(updateEntry(updatedEntry))
+      setData(updatedEntry)
+      setIsPreview(true)
+    },
+    [content, data, dispatch, hasChanges, params.snippet],
+  )
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', async () => {
@@ -238,7 +247,6 @@ export default function SnippetDetails() {
   )
 }
 
-
 const createStyles = (darkMode: boolean) =>
   StyleSheet.create({
     container: {
@@ -277,4 +285,3 @@ const createStyles = (darkMode: boolean) =>
       color: darkMode ? 'white' : '#1a1a1a',
     },
   })
-
