@@ -5,6 +5,8 @@ import { View, Text, Pressable, TextInput, ScrollView, StyleSheet } from 'react-
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
 
+import { FontAwesome6 } from '@expo/vector-icons'
+
 import Markdown from 'react-native-markdown-display'
 
 import { AppDispatch } from '../../store'
@@ -66,7 +68,7 @@ export default function SnippetDetails() {
   const [data, setData] = useState<Entry>()
   const params = useLocalSearchParams()
   const [content, setContent] = useState('')
-  const [isPreview, setIsPreview] = useState(true)
+  const [isPreview, setIsPreview] = useState(false)
   const typingTimeout = useRef<NodeJS.Timeout | null>(null)
 
   const dispatch: AppDispatch = useDispatch()
@@ -94,7 +96,6 @@ export default function SnippetDetails() {
     }
     typingTimeout.current = setTimeout(() => {
       saveChanges(value)
-      setIsPreview(true)
     }, 2000)
   }
 
@@ -175,7 +176,6 @@ export default function SnippetDetails() {
 
       dispatch(updateEntry(updatedEntry))
       setData(updatedEntry)
-      setIsPreview(true)
     },
     [data, dispatch, params.snippet],
   )
@@ -202,6 +202,12 @@ export default function SnippetDetails() {
     <>
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Pressable
+            onPress={() => setIsPreview(prev => !prev)}
+            style={{ position: 'absolute', right: 0, zIndex: 9999 }}
+          >
+            <FontAwesome6 name={isPreview ? 'eye-slash' : 'eye'} size={20} color="white" />
+          </Pressable>
           <Text style={styles.dateText}>
             {new Date(data.createdAt).toLocaleString(undefined, {
               year: 'numeric',
