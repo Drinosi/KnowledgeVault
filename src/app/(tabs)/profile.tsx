@@ -9,13 +9,14 @@ import { clearEntries } from '../../store/slices/entriesSlice'
 
 import Feather from '@expo/vector-icons/Feather'
 import { setNotification } from '../../store/slices/notificationSlice'
+import { TagRepository } from '../../repositories/TagRepository'
 
 const Profile = () => {
   const [loading, setLoading] = useState(false)
 
   const dispatch: AppDispatch = useDispatch()
 
-  async function handleClick() {
+  async function deleteEntries() {
     setLoading(true)
     try {
       await EntryRepository.deleteAll()
@@ -27,11 +28,27 @@ const Profile = () => {
     }
   }
 
+  async function deleteTags() {
+    setLoading(true)
+    try {
+      await TagRepository.deleteAll()
+      dispatch(clearEntries())
+    } catch (error: any) {
+      dispatch(setNotification({ type: 'error', message: error.message }))
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <View style={styles.wrapper}>
-      <Pressable style={styles.deleteButton} onPress={handleClick}>
+      <Pressable style={styles.deleteButton} onPress={deleteEntries}>
         <Feather name="trash-2" size={24} color={'white'} />
         <Text style={styles.buttonText}>{!loading ? 'Delete all my snippets!' : 'Loading...'}</Text>
+      </Pressable>
+      <Pressable style={styles.deleteButton} onPress={deleteTags}>
+        <Feather name="trash-2" size={24} color={'white'} />
+        <Text style={styles.buttonText}>{!loading ? 'Delete all my tags!' : 'Loading...'}</Text>
       </Pressable>
     </View>
   )
