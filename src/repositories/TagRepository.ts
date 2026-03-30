@@ -15,4 +15,19 @@ export const TagRepository = {
       name: row.name,
     }))
   },
+
+  async findByName(name: string): Promise<Tag | null> {
+    const db = await openDB()
+    const rows: any[] = await db.getAllAsync('SELECT * FROM tags WHERE name = ?', name)
+
+    if (!rows || rows.length === 0) return null
+
+    const row = rows[0]
+    return { id: row.id, name: row.name }
+  },
+
+  async deleteAll(): Promise<void> {
+    const db = await openDB()
+    await db.runAsync('DELETE FROM tags')
+  },
 }
