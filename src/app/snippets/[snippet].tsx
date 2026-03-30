@@ -1,3 +1,6 @@
+import 'react-native-get-random-values'
+import { v4 as uuidv4 } from 'uuid'
+
 import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { useCallback, useEffect, useState, useRef } from 'react'
 import { View, Text, Pressable, TextInput, ScrollView, StyleSheet } from 'react-native'
@@ -22,6 +25,8 @@ import { setUnlocked } from '../../store/slices/securitySlice'
 
 import * as LocalAuthentication from 'expo-local-authentication'
 import { setNotification } from '../../store/slices/notificationSlice'
+import { TagRepository } from '../../repositories/TagRepository'
+import { EntryTagRepository } from '../../repositories/EntryTagRepository'
 
 const authenticate = async () => {
   const result = await LocalAuthentication.authenticateAsync({
@@ -70,6 +75,8 @@ export default function SnippetDetails() {
   const [content, setContent] = useState('')
   const [isPreview, setIsPreview] = useState(false)
   const typingTimeout = useRef<NodeJS.Timeout | null>(null)
+
+  console.log(params)
 
   const dispatch: AppDispatch = useDispatch()
   const navigation = useNavigation()
@@ -158,6 +165,29 @@ export default function SnippetDetails() {
       const entryId = Array.isArray(params.snippet) ? params.snippet[0] : params.snippet
 
       const { title, body } = parseContent(value)
+
+      const catchAllTags = [...new Set(body.match(/(^|\s)(#[a-zA-Z0-9_]+)/g) || [])]
+
+      await Promise.all(
+        catchAllTags.map(tag =>
+          TagRepository.create({
+            id: uuidv4(),
+            name: tag,
+          }),
+        ),
+      )
+
+      await Promise.all(
+        catchAllTags.map(async tagName => {
+          const tag = await TagRepository.findByName(tagName)
+          console.log(tag)
+
+          await EntryTagRepository.create({
+            entry_id: params.snippet,
+            tag_id: tag?.id,
+          })
+        }),
+      )
 
       if (title === data.title && body === data.content) return
 
