@@ -1,13 +1,20 @@
 import { Tabs } from 'expo-router'
 import { Entypo, FontAwesome6, Ionicons } from '@expo/vector-icons'
 
-import { View, Text } from 'react-native'
+import { View, Pressable } from 'react-native'
 
 import useIsDarkMode from '../../hooks/useIsDarkMode'
 import CreateEntry from '../../components/CreateEntry'
 
+import { toggleSidebar } from '../../store/slices/sideBarSlice'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { RootState } from '../../store'
+
 export default function TabLayout() {
   const { darkMode } = useIsDarkMode()
+  const dispatch = useDispatch()
+  const open = useSelector((state: RootState) => state.sidebar.opened)
 
   return (
     <Tabs
@@ -42,11 +49,9 @@ export default function TabLayout() {
                 paddingBottom: 20,
               }}
             >
-              <Text
-                style={{ color: 'white', fontSize: 25, fontWeight: '500', marginVertical: 'auto' }}
-              >
-                Snippets
-              </Text>
+              <Pressable onPress={() => dispatch(toggleSidebar())}>
+                <Ionicons name={open ? 'close' : 'reorder-three'} size={40} color="white" />
+              </Pressable>
               <CreateEntry />
             </View>
           ),
