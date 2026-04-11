@@ -6,6 +6,7 @@ import entriesReducer from './slices/entriesSlice'
 import themeReducer from './slices/colorThemeSlice'
 import notificationReducer from './slices/notificationSlice'
 import securityReducer from './slices/securitySlice'
+import sidebarReducer from './slices/sideBarSlice'
 
 const themePersistConfig = {
   key: 'theme',
@@ -20,6 +21,7 @@ export const store = configureStore({
     theme: persistedThemeReducer,
     security: securityReducer,
     notification: notificationReducer,
+    sidebar: sidebarReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

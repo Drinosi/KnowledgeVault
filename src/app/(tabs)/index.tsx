@@ -1,10 +1,8 @@
 import { useEffect, useState, useMemo } from 'react'
-import { Text, View, SectionList, StyleSheet, Pressable } from 'react-native'
+import { Text, View, SectionList, StyleSheet } from 'react-native'
 
 import { EntryRepository } from '../../repositories/EntryRepository'
 import { Entry } from '../../domain/Entry'
-
-import { router } from 'expo-router'
 
 import { Tag } from '../../domain/Tag'
 
@@ -19,12 +17,9 @@ import useIsDarkMode from '../../hooks/useIsDarkMode'
 
 import EmptyStateHome from '../../components/EmptyStateHome'
 import { setNotification } from '../../store/slices/notificationSlice'
-import { TagRepository } from '../../repositories/TagRepository'
-import { EntryTagRepository } from '../../repositories/EntryTagRepository'
+import TagsSideBar from '../../components/TagsSideBar'
 
 export default function App() {
-  const [tags, setTags] = useState<Tag[]>([])
-
   const { darkMode } = useIsDarkMode()
   const styles = useMemo(() => createStyles(darkMode), [darkMode])
   const dispatch: AppDispatch = useDispatch()
@@ -93,9 +88,6 @@ export default function App() {
     ;(async () => {
       try {
         const results = await EntryRepository.getAll(100, 0)
-        const tags = await TagRepository.getAll()
-        const entryTags = await EntryTagRepository.getAll()
-        setTags(tags)
 
         dispatch(setEntries(results))
       } catch (error: any) {
@@ -106,23 +98,10 @@ export default function App() {
 
   return (
     <View style={styles.wrapper}>
+      <TagsSideBar />
       {entries.length ? (
         <>
           <Text style={styles.title}>{filteredEntries.length} snippets</Text>
-          {tags.map((tag: Tag) => {
-            return (
-              <Pressable
-                onPress={async () => {
-                  const entryTag = await EntryTagRepository.getByTagId(tag.id)
-
-                  router.push(`/snippets/${entryTag[0].entry_id}`)
-                }}
-                key={tag.id}
-              >
-                <Text> {tag.name}</Text>
-              </Pressable>
-            )
-          })}
           <View style={styles.searchWrapper}>
             <FilterAndSearch setSearchQuery={setSearchQuery} />
           </View>

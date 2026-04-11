@@ -74,9 +74,7 @@ export default function SnippetDetails() {
   const params = useLocalSearchParams()
   const [content, setContent] = useState('')
   const [isPreview, setIsPreview] = useState(false)
-  const typingTimeout = useRef<NodeJS.Timeout | null>(null)
-
-  console.log(params)
+  const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const dispatch: AppDispatch = useDispatch()
   const navigation = useNavigation()
@@ -183,8 +181,8 @@ export default function SnippetDetails() {
           console.log(tag)
 
           await EntryTagRepository.create({
-            entry_id: params.snippet,
-            tag_id: tag?.id,
+            entry_id: String(params.snippet),
+            tag_id: tag?.id || '',
           })
         }),
       )
